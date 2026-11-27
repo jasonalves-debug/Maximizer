@@ -119,6 +119,23 @@ th{color:var(--muted);font-size:14px;font-weight:700}
 .counter b{min-width:38px;text-align:center;font-family:var(--display);font-size:30px;font-weight:800}
 .group-title{font-family:Figtree,sans-serif;font-size:16px;font-weight:800;color:var(--pine);letter-spacing:0;margin:26px 0 10px}
 .status{font-weight:700;margin:12px 0 4px}
+.alloc{padding:0;overflow:hidden;border-color:#BFE0D8}
+.allochead{background:var(--pine-soft);padding:20px 22px 16px}
+.allochead h2{font-size:24px}.allochead p{margin:0 0 12px;color:var(--muted);font-size:16px}
+.allocbar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:#fff;margin-bottom:10px}
+.allocbar i{display:block;height:100%}.allocbar .rest{flex:1}
+.allocline{display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:700}
+.allocline .ok{color:var(--pine-deep)}.allocline .bad{color:var(--warn-ink)}
+.linkbtn{border:0;background:none;color:var(--pine-deep);text-decoration:underline;font-weight:700;cursor:pointer;padding:8px}
+.arow{padding:16px 22px;border-top:1px solid var(--line)}
+.arowtop{display:flex;align-items:center;gap:12px}
+.arowtop h3{margin:0;font-size:19px;flex:1}
+.adot{width:14px;height:14px;border-radius:50%;flex:0 0 auto}
+.arow .counter .btn{width:44px;height:44px;font-size:22px}.arow .counter b{font-size:26px}
+.asum{margin:6px 0 0 26px;color:var(--muted);font-size:16px}
+.arow .hint,.arow .warning{margin:8px 0 0 26px}
+.arow details.adet{margin:8px 0 0 26px;padding:0;border:0;background:none;box-shadow:none;border-radius:0}.adet summary{cursor:pointer;color:var(--pine-deep);font-weight:600;font-size:15px}
+.adet .service-copy{margin:8px 0}
 .warning{color:var(--rose);font-size:15px}
 .service-copy{font-size:15px;color:var(--muted);max-width:64ch}
 .tagline{display:inline-block;font-size:13px;font-weight:700;color:var(--pine-deep);background:var(--pine-soft);padding:2px 9px;border-radius:99px}
@@ -273,8 +290,7 @@ footer p{margin:0 0 8px;max-width:78ch}
   <div id="periodFlag" class="alert hidden"></div>
   <div id="bEmpty" class="card"><h2>Nothing picked yet</h2><p style="margin:0">Tap Change answers and pick what you'd use.</p></div>
   <div id="bResults" class="hidden">
-    <div class="card"><h2 id="bHeadline"></h2><p id="bHelp"></p><div id="bProgress" class="alert good" style="margin:0"></div></div>
-    <div id="serviceResults"></div>
+    <div class="card alloc"><div class="allochead"><h2 id="bHeadline"></h2><p id="bHelp"></p><div id="bBar" class="allocbar" aria-hidden="true"></div><div class="allocline"><span id="bProgress" class="ok"></span><button type="button" class="linkbtn" id="bResetCounts" onclick="resetCounts()">Reset</button></div></div><div id="serviceResults"></div></div>
   </div>
   <div id="dentalResults"></div>
   <div id="scheduleCard" class="card hidden"><h2>When to book</h2><p id="scheduleIntro"></p><table><thead><tr><th>Month</th><th>Book</th><th>Heads-up</th></tr></thead><tbody id="scheduleRows"></tbody></table></div>
@@ -627,17 +643,18 @@ function renderBenefits(){saveB();const chosen=Benefits.services.filter(s=>bStat
  $('gearResults').innerHTML=(r?r.gear:Benefits.calculate({...bState,selected:['audio']}).gear).map(g=>`<div class="card"><span class="tagline">${g.category}</span><h3 style="margin-top:6px">${g.name}</h3><p class="service-copy">${g.use} ${g.get}</p><p class="status">${g.line}</p><p style="margin:0">${g.detail}</p></div>`).join('');
  const dv=dentalVisits(p);renderDental(p,dv);renderSchedule(p,r,dv);
  if(!r)return;
- if(bState.planType!=='separate'&&!(+bState.shared>0)&&r.shared.length){$('bHeadline').textContent='Enter your amount';$('bHelp').textContent='Type the amount your plan covers into "Amount to plan with" on the left. Your insurer\'s app or benefits booklet lists it.';$('bProgress').textContent='Waiting for your amount.';$('bProgress').className='alert'}
+ if(bState.planType!=='separate'&&!(+bState.shared>0)&&r.shared.length){$('bHeadline').textContent='Enter your amount';$('bHelp').textContent='Type the amount your plan covers into "Amount to plan with" on the left. Your insurer\'s app or benefits booklet lists it.';$('bProgress').textContent='Waiting for your amount.';$('bProgress').className='bad'}
  else{const capped=!r.overBudget&&r.shared.length&&r.sharedLeft>=Math.min(...r.shared.map(s=>r.services[s.id].pay))&&r.shared.every(s=>r.services[s.id].locked||r.services[s.id].count>=r.services[s.id].limit);
-  $('bHeadline').textContent=r.headline;$('bHelp').textContent=r.help+(capped?` The ${money(r.sharedLeft)} left over doesn't fit at a realistic pace in ${r.period.weeks} weeks. Tap + if you can book more often, or tick another service you'd use.`:'');
-  $('bProgress').textContent=r.status;$('bProgress').className='alert '+(r.overBudget?'':'good')}
- let html='';
- for(const section of['Aches, pain and injuries','Stress and mental health','Everyday health']){const items=chosen.filter(s=>s.section===section);if(!items.length)continue;html+=`<h3 class="group-title">${section}</h3>`;
-  for(const s of items){const x=r.services[s.id],own=r.own.includes(s),locked=Object.prototype.hasOwnProperty.call(bState.locks,s.id);let warn='';
-   if(x.overPace)warn=`<p class="warning">${s.id==='audio'?s.most:`${s.joke?s.joke+' ':''}${x.count} in ${r.period.weeks===52?'a year':r.period.weeks+' weeks'} is ${x.often}. ${s.most}`} <button class="btn small secondary" onclick="unlockBenefit('${s.id}')">Use a realistic pace</button></p>`;
-   const sum=x.count?`${ucfirst(x.often)}. Plan pays ${money(x.plan)} in total${x.person<.5?', fully covered.':`, you pay ${money(x.person)} a visit.`}`:(bState.percent>0?'None planned.':'Not covered at 0%.');
-   let ownLine='';if(own){const a=r.amt(s),left=a-x.plan;ownLine=`<p class="hint">${!a?"Enter this service's own amount on the left.":`Own amount: ${money(a)}. ${left<.5?'All of it is planned.':x.count>=x.limit&&!locked?`${money(left)} left at a realistic pace. Tap + to book more.`:`${money(left)} not planned yet.`}`}</p>`}
-   html+=`<div class="card service-card ${own?'own':''}"><div class="service-head"><div><span class="tagline">${s.category}</span><h3>${s.name}</h3><div class="service-copy">${s.use} ${s.get}</div><div class="pricerow"><label>Price per visit $<input type="number" min="0" step="5" data-price="${s.id}" value="${x.price}"></label><label>Plan's per-visit limit $<input type="number" min="0" step="5" data-cap="${s.id}" value="${x.cap||''}" placeholder="none"></label></div></div><div class="counter"><button class="btn secondary" aria-label="One fewer ${s.one}" onclick="changeCount('${s.id}',-1)" ${x.count<=0?'disabled':''}>−</button><b aria-live="polite">${x.count}</b><button class="btn secondary" aria-label="One more ${s.one}" onclick="changeCount('${s.id}',1)" ${x.count>=x.max?'disabled':''}>+</button></div></div><p class="status">${sum}</p>${locked?`<p class="hint">You set this. <button class="btn small secondary" onclick="unlockBenefit('${s.id}')">Undo</button></p>`:''}${ownLine}${warn}</div>`}}
+  $('bHeadline').textContent=r.shared.length>1?`Split your ${money(+bState.shared||0)} across ${r.shared.length} services`:r.headline;$('bHelp').textContent=r.help+(capped?` The ${money(r.sharedLeft)} left over doesn't fit at a realistic pace in ${r.period.weeks} weeks. Tap + if you can book more often, or tick another service you'd use.`:'');
+  $('bProgress').textContent=(r.overBudget?'':'✓ ')+r.status;$('bProgress').className=r.overBudget?'bad':'ok'}
+ let html='',pool=+bState.shared||0,COL=['#0E6656','#F2A93B','#6E8BA3','#8FD0C4','#E08A6B','#8A7FB5','#B7C46A','#C4637A'],bar='',ci=0;
+ for(const s of chosen){const x=r.services[s.id],own=r.own.includes(s),locked=Object.prototype.hasOwnProperty.call(bState.locks,s.id),col=COL[ci++%COL.length];let warn='';
+  if(!own&&pool>0&&x.plan>0)bar+=`<i style="width:${Math.min(100,x.plan/pool*100)}%;background:${col}" title="${s.name}"></i>`;
+  if(x.overPace)warn=`<p class="warning">${s.id==='audio'?s.most:`${s.joke?s.joke+' ':''}${x.count} in ${r.period.weeks===52?'a year':r.period.weeks+' weeks'} is ${x.often}. ${s.most}`} <button class="btn small secondary" onclick="unlockBenefit('${s.id}')">Use a realistic pace</button></p>`;
+  const sum=x.count?`Plan pays ${money(x.plan)} · ${x.often}${x.person<.5?' · fully covered':` · you pay ${money(x.person)} a visit`}`:(bState.percent>0?'None planned':'Not covered at 0%');
+  let ownLine='';if(own){const a=r.amt(s),left=a-x.plan;ownLine=`<p class="hint">${!a?"Enter this service's own amount in All settings.":`Own amount: ${money(a)}. ${left<.5?'All of it is planned.':x.count>=x.limit&&!locked?`${money(left)} left at a realistic pace. Tap + to book more.`:`${money(left)} not planned yet.`}`}</p>`}
+  html+=`<div class="arow ${own?'own':''}"><div class="arowtop"><span class="adot" style="background:${own?'#fff':col};${own?'box-shadow:inset 0 0 0 2px '+col:''}"></span><h3>${s.name}</h3><div class="counter"><button class="btn secondary" aria-label="One fewer ${s.one}" onclick="changeCount('${s.id}',-1)" ${x.count<=0?'disabled':''}>−</button><b aria-live="polite">${x.count}</b><button class="btn secondary" aria-label="One more ${s.one}" onclick="changeCount('${s.id}',1)" ${x.count>=x.max?'disabled':''}>+</button></div></div><p class="asum">${own?'Own amount · ':''}${sum}</p>${ownLine}${warn}<details class="adet"><summary>About this and prices</summary><p class="service-copy">${s.use} ${s.get}</p><div class="pricerow"><label>Price per visit $<input type="number" min="0" step="5" data-price="${s.id}" value="${x.price}"></label><label>Plan's per-visit limit $<input type="number" min="0" step="5" data-cap="${s.id}" value="${x.cap||''}" placeholder="none"></label></div></details></div>`}
+ $('bBar').innerHTML=bar+'<span class="rest"></span>';$('bBar').classList.toggle('hidden',!bar);$('bResetCounts').classList.toggle('hidden',!Object.keys(bState.locks).length);
  $('serviceResults').innerHTML=html;
  $$('[data-price]').forEach(x=>x.onchange=()=>{const v=+x.value,id=x.dataset.price,def=Benefits.services.find(s=>s.id===id).cost;if(v>0&&v!==def)bState.prices[id]=v;else delete bState.prices[id];renderBenefits()});
  $$('[data-cap]').forEach(x=>x.onchange=()=>{const v=+x.value,id=x.dataset.cap;if(v>0)bState.caps[id]=v;else delete bState.caps[id];renderBenefits()});
@@ -696,6 +713,7 @@ function renderGearInputs(){const g=bState.gear;let h='';
  $('gearInputs').innerHTML=h;$$('[data-g]').forEach(x=>x.onchange=()=>{bState.gear[x.dataset.g]=['lastYear','dentalLast'].includes(x.dataset.g)?x.value:+x.value;renderBenefits()})}
 function changeCount(id,d){const r=Benefits.calculate(bState),x=r.services[id];bState.locks[id]=Math.max(0,Math.min(x.max,x.count+d));renderBenefits()}
 function unlockBenefit(id){delete bState.locks[id];renderBenefits()}
+function resetCounts(){bState.locks={};renderBenefits()}
 
 /* ---------- guided questions ---------- */
 const optsHtml=(list,cur,cls='')=>`<div class="opts ${cls}">`+list.map(([v,label,sub])=>`<button type="button" class="opt ${String(cur)===String(v)?'on':''}" data-v="${v}"><b>${label}</b>${sub?`<span>${sub}</span>`:''}</button>`).join('')+'</div>';
