@@ -334,7 +334,7 @@ const HOLIDAYS=[
  {id:'christmas',name:'Christmas Day',date:y=>D(y,11,25)},
  {id:'boxing',name:'Boxing Day',date:y=>D(y,11,26)}];
 const PROVINCES={ON:['Ontario','newyear family goodfri victoria canada labour thanks christmas boxing'],BC:['British Columbia','newyear family goodfri victoria canada civic labour truth thanks remembrance christmas'],AB:['Alberta','newyear family goodfri victoria canada labour thanks remembrance christmas'],SK:['Saskatchewan','newyear family goodfri victoria canada civic labour thanks remembrance christmas'],MB:['Manitoba','newyear family goodfri victoria canada labour truth thanks christmas'],QC:['Quebec','newyear goodfri victoria stjean canada labour thanks christmas'],NB:['New Brunswick','newyear family goodfri canada civic labour remembrance christmas'],NS:['Nova Scotia','newyear family goodfri canada labour remembrance christmas'],PE:['Prince Edward Island','newyear family goodfri canada labour truth remembrance christmas'],NL:['Newfoundland and Labrador','newyear goodfri canada labour remembrance christmas'],FED:['Federally regulated job','newyear goodfri victoria canada labour truth thanks remembrance christmas boxing']};
-let vState={selected:{},weekStarts:[],holidays:{},mode:'vacation',bridges:true,province:'ON',unit:'hours',done:false,black:[],monthEnd:false,balDate:'',floatMonths:[0]};
+let vState={selected:{},weekStarts:[],holidays:{},mode:'vacation',bridges:true,province:'ON',unit:'hours',done:false,black:[],monthEnd:false,monthStart:false,balDate:'',floatMonths:[0]};
 const prov=()=>PROVINCES[vState.province]||PROVINCES.ON;
 const holOn=id=>vState.holidays[id]??prov()[1].split(' ').includes(id);
 const holCache={};
@@ -344,9 +344,10 @@ function holidays(y){const sig=y+vState.province+JSON.stringify(vState.holidays)
  return holCache[sig]=o}
 const holidayAt=k=>holidays(+k.slice(0,4))[k];
 const blkCache={};
-function blocked(y){const sig=y+JSON.stringify([vState.black,vState.monthEnd])+vState.province+JSON.stringify(vState.holidays);if(blkCache[sig])return blkCache[sig];const set=new Set(),hol=holidays(y);
+function blocked(y){const sig=y+JSON.stringify([vState.black,vState.monthEnd,vState.monthStart])+vState.province+JSON.stringify(vState.holidays);if(blkCache[sig])return blkCache[sig];const set=new Set(),hol=holidays(y);
  for(let m=0;m<12;m++){if((vState.black||[]).includes(m))for(let d=D(y,m,1);d.getMonth()===m;d=addDays(d,1))set.add(key(d));
-  if(vState.monthEnd){let d=D(y,m+1,0),n=0;while(n<3){const k=key(d);if(!isWkd(d)&&!hol[k]){set.add(k);n++}d=addDays(d,-1)}}}
+  if(vState.monthEnd){let d=D(y,m+1,0),n=0;while(n<3){const k=key(d);if(!isWkd(d)&&!hol[k]){set.add(k);n++}d=addDays(d,-1)}}
+  if(vState.monthStart){let d=D(y,m,1),n=0;while(n<4){const k=key(d);if(!isWkd(d)&&!hol[k]){set.add(k);n++}d=addDays(d,1)}}}
  return blkCache[sig]=set}
 
 /* ---------- time-off state ---------- */
@@ -354,7 +355,7 @@ const INPUTS=['year','dayHours','startVacation','earned','floatTotal','floatNew'
 const dayH=()=>+$('dayHours').value||7.5;
 function V(){const h=dayH(),m=vState.unit==='days'?h:1;return{y:+$('year').value||new Date().getFullYear(),h,start:(+$('startVacation').value||0)*m,annual:(+$('earned').value||0)*m,floatAvail:(+$('floatTotal').value||0)*m,target:(+$('target').value||0)*m}}
 const fmtU=hrs=>{const h=dayH();if(vState.unit==='days'){const d=hrs/h;return num(d)+(Math.abs(d-1)<1e-9?' day':' days')}return num(hrs)+' h'};
-function saveV(){const inputs={};INPUTS.forEach(id=>inputs[id]=$(id).value);store.set('useYourDaysPlan',{v:2,selected:vState.selected,weekStarts:vState.weekStarts,holidays:vState.holidays,bridges:vState.bridges,province:vState.province,unit:vState.unit,done:vState.done,black:vState.black,monthEnd:vState.monthEnd,balDate:vState.balDate,floatMonths:vState.floatMonths});store.set('useYourDaysInputs',inputs)}
+function saveV(){const inputs={};INPUTS.forEach(id=>inputs[id]=$(id).value);store.set('useYourDaysPlan',{v:2,selected:vState.selected,weekStarts:vState.weekStarts,holidays:vState.holidays,bridges:vState.bridges,province:vState.province,unit:vState.unit,done:vState.done,black:vState.black,monthEnd:vState.monthEnd,monthStart:vState.monthStart,balDate:vState.balDate,floatMonths:vState.floatMonths});store.set('useYourDaysInputs',inputs)}
 function loadV(){const p=store.get('useYourDaysPlan');if(p){if(p.v===2)Object.assign(vState,p);else{const wk=new Set(p.weeks||[]);for(const[k,t]of Object.entries(p.selected||{})){vState.selected[k]={t,f:1};if(wk.has(k))vState.selected[k].w=1}}}
  const o=store.get('useYourDaysInputs');if(!o)return;
  if(o.earned===undefined&&o.weeks)o.earned=+o.weeks*5*(+o.dayHours||7.5);
@@ -409,15 +410,15 @@ function renderHolidayPicker(){const y=V().y;$('holidayNote').textContent=`Statu
  $$('[data-hol]').forEach(x=>x.onchange=()=>{vState.holidays[x.dataset.hol]=x.checked;dropHolidayDays();saveV();render()})}
 function renderFloatMonths(){const ms=vState.floatMonths||[0];$('floatMonthPicker').innerHTML=Benefits.MONTHS.map((m,i)=>`<label class="check" style="margin:4px 0"><input type="checkbox" data-fm="${i}" ${ms.includes(i)?'checked':''}><span>${m}</span></label>`).join('');
  $$('[data-fm]').forEach(x=>x.onchange=()=>{const m=+x.dataset.fm;vState.floatMonths=x.checked?[...new Set([...(vState.floatMonths||[]),m])].sort((a,b)=>a-b):(vState.floatMonths||[]).filter(i=>i!==m);saveV();render()})}
-function renderBlackPicker(){$('blackPicker').innerHTML='<div class="row">'+Benefits.MONTHS.map((m,i)=>`<label class="check" style="margin:4px 0"><input type="checkbox" data-blk="${i}" ${(vState.black||[]).includes(i)?'checked':''}><span>${m}</span></label>`).join('')+`</div><label class="check"><input type="checkbox" data-blk="me" ${vState.monthEnd?'checked':''}><span>The last 3 workdays of every month</span></label>`;
- $$('[data-blk]').forEach(x=>x.onchange=()=>{const v=x.dataset.blk;if(v==='me')vState.monthEnd=x.checked;else{const m=+v;vState.black=x.checked?[...new Set([...(vState.black||[]),m])]:(vState.black||[]).filter(i=>i!==m)}saveV();render()})}
+function renderBlackPicker(){$('blackPicker').innerHTML='<div class="row">'+Benefits.MONTHS.map((m,i)=>`<label class="check" style="margin:4px 0"><input type="checkbox" data-blk="${i}" ${(vState.black||[]).includes(i)?'checked':''}><span>${m}</span></label>`).join('')+`</div><label class="check"><input type="checkbox" data-blk="me" ${vState.monthEnd?'checked':''}><span>The last 3 workdays of every month</span></label><label class="check"><input type="checkbox" data-blk="ms" ${vState.monthStart?'checked':''}><span>The first 4 workdays of every month</span></label>`;
+ $$('[data-blk]').forEach(x=>x.onchange=()=>{const v=x.dataset.blk;if(v==='me')vState.monthEnd=x.checked;else if(v==='ms')vState.monthStart=x.checked;else{const m=+v;vState.black=x.checked?[...new Set([...(vState.black||[]),m])]:(vState.black||[]).filter(i=>i!==m)}saveV();render()})}
 function dropHolidayDays(){for(const k of Object.keys(vState.selected))if(holidayAt(k))delete vState.selected[k]}
 
 function clickDay(k){const S=vState.selected,cur=S[k],m=vState.mode;
  if(!cur)S[k]={t:m,f:1};else if(cur.t!==m)S[k]={t:m,f:cur.f};else if(cur.f===1)S[k]={t:m,f:.5};else delete S[k];
  saveV();render()}
 
-function blackText(){const l=[...(vState.black||[])].sort((a,b)=>a-b).map(i=>Benefits.MONTHS[i]);if(vState.monthEnd)l.push('month-end');return l.length?` Avoiding ${Benefits.joinWords(l)}.`:''}
+function blackText(){const l=[...(vState.black||[])].sort((a,b)=>a-b).map(i=>Benefits.MONTHS[i]);if(vState.monthEnd)l.push('month-end');if(vState.monthStart)l.push('month-start');return l.length?` Avoiding ${Benefits.joinWords(l)}.`:''}
 const STYLES={fridays:'Fridays off',mondays:'Mondays off',smart:'Longest breaks for the fewest days',weeks:'Full weeks off'};
 /* ---------- plan builder ---------- */
 function buildPlan(){const before=JSON.stringify(vState.selected),{y,h,start,annual,target}=V(),floatAvail=floatUsable(y),hol=holWin(),S=vState.selected,strat=$('strategy').value,W=win();
@@ -764,9 +765,9 @@ const stepsV=[
   html:()=>optsHtml([['spread','All year','Evenly spread out, so there is a break every few weeks.'],['warm','Mostly May to September','The warmer months get your days first.'],['cool','Mostly October to April','The cooler months get your days first.']],$('season').value),
   bind:(r,go)=>pickOpts(r,v=>{$('season').value=v;go()})},
  {q:"Are there times you can't take off?",help:'Busy periods at work, like year-end or tax season. Your days stay out of them. If any time works, just tap Continue.',
-  html:()=>`<div class="opts multi grid4">`+Benefits.MONTHS.map((m,i)=>`<button type="button" class="opt ${(vState.black||[]).includes(i)?'on':''}" data-m="${i}" aria-pressed="${(vState.black||[]).includes(i)}" aria-label="${m}"><b>${m.slice(0,3)}</b></button>`).join('')+`</div><div class="opts multi" style="margin-top:10px"><button type="button" class="opt ${vState.monthEnd?'on':''}" data-me="1" aria-pressed="${!!vState.monthEnd}"><b>The last few workdays of every month</b><span>For month-end busy periods. Blocks the last 3 workdays of each month.</span></button></div>`,
+  html:()=>`<div class="opts multi grid4">`+Benefits.MONTHS.map((m,i)=>`<button type="button" class="opt ${(vState.black||[]).includes(i)?'on':''}" data-m="${i}" aria-pressed="${(vState.black||[]).includes(i)}" aria-label="${m}"><b>${m.slice(0,3)}</b></button>`).join('')+`</div><div class="opts multi" style="margin-top:10px"><button type="button" class="opt ${vState.monthEnd?'on':''}" data-me="1" aria-pressed="${!!vState.monthEnd}"><b>The last few workdays of every month</b><span>For month-end busy periods. Blocks the last 3 workdays of each month.</span></button><button type="button" class="opt ${vState.monthStart?'on':''}" data-ms="1" aria-pressed="${!!vState.monthStart}"><b>The first few workdays of every month</b><span>For month-start busy periods. Blocks the first 4 workdays of each month.</span></button></div>`,
   bind:r=>r.querySelectorAll('.multi .opt').forEach(b=>b.onclick=()=>{const on=!b.classList.contains('on');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);
-   if(b.dataset.me)vState.monthEnd=on;else{const m=+b.dataset.m;vState.black=on?[...new Set([...(vState.black||[]),m])]:(vState.black||[]).filter(x=>x!==m)}})},
+   if(b.dataset.me)vState.monthEnd=on;else if(b.dataset.ms)vState.monthStart=on;else{const m=+b.dataset.m;vState.black=on?[...new Set([...(vState.black||[]),m])]:(vState.black||[]).filter(x=>x!==m)}})},
  {q:()=>$('strategy').value==='weeks'?'Any weeks you already know you want?':'Do you want a full week off?',help:()=>$('strategy').value==='weeks'?'If there is a week you need, like a trip, pick its Monday. The planner fills in the other weeks for you.':'Pick the Monday it starts. You get that whole week off, 9 days in a row with the weekends, and your other days are planned around it.',
   html:()=>{const n=+$('fullWeeks').value||0;return optsHtml([['0','No'],['1','One week'],['2','Two weeks'],['3','Three weeks']],n,'grid2')+`<div id="wWeeks">${weekDates(n)}</div>`},
   bind:(r,go)=>pickOpts(r,v=>{$('fullWeeks').value=v;r.querySelector('#wWeeks').innerHTML=weekDates(+v);if(v==='0')go()}),
