@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-CA"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Use Your Benefits — plan your time off and health coverage</title>
-<meta name="description" content="Free planner for Canadian workers. Turn vacation days into long weekends and split your health coverage into realistic visits before it resets. No sign-up; nothing leaves your device.">
+<title>Use What You Earn — plan your time off and health coverage</title>
+<meta name="description" content="Free time-off planner for Canadian workers. Turn your vacation days into longer breaks, and use your health coverage before it resets. No sign-up; nothing leaves your device.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -187,8 +187,8 @@ footer p{margin:0 0 8px;max-width:78ch}
 @media print{.topbar,#home,.controls,.btn,#toast,.seg,footer,.wizard{display:none!important}.hl{background:#fff;color:#000;border:2px solid #000}.hl .n.gold{color:#000}.view{display:none}.view.active{display:block}.grid{display:block}.calendar{grid-template-columns:repeat(3,1fr)}body{background:#fff;font-size:13px}.month{break-inside:avoid}.day{min-height:24px;font-size:11px}}
 </style></head><body>
 <header class="topbar"><div class="wrap bar">
-  <a href="#" class="brand" id="homeLink"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#16212B"/><circle cx="16" cy="19" r="7" fill="#F6BE1E"/><rect x="5" y="19" width="22" height="9" fill="#16212B"/><path d="M7 19.5h18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>Use Your Benefits</a>
-  <nav class="tabs" aria-label="Planners"><button class="tab" data-view="benefitsView">Coverage</button><button class="tab" data-view="vacationView">Time off</button></nav>
+  <a href="#" class="brand" id="homeLink"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#16212B"/><circle cx="16" cy="19" r="7" fill="#F6BE1E"/><rect x="5" y="19" width="22" height="9" fill="#16212B"/><path d="M7 19.5h18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>Use What You Earn</a>
+  <nav class="tabs" aria-label="Planners"><button class="tab" data-view="vacationView">Time off</button><button class="tab" data-view="benefitsView">Coverage</button></nav>
   <button class="linkbtn" id="resetAll">Start over</button>
 </div></header>
 
@@ -196,9 +196,9 @@ footer p{margin:0 0 8px;max-width:78ch}
 <!-- ============ HOME ============ -->
 <section id="home" class="hero hidden">
   <div>
-    <h1>Use what you've earned.</h1>
-    <p class="lede">Unused vacation and health coverage disappear every year. Enter what you have and get a plan to use it before it resets.</p>
-    <div class="cta"><button class="btn" data-go="benefitsView">Plan my health coverage</button><button class="btn secondary" data-go="vacationView">Plan my time off</button></div>
+    <h1>Get more time off from what you've earned.</h1>
+    <p class="lede">Place your vacation days next to weekends and holidays so each one goes further. Then use your health coverage before it resets.</p>
+    <div class="cta"><button class="btn" data-go="vacationView">Plan my time off</button><button class="btn secondary" data-go="benefitsView">Plan my health coverage</button></div>
     <p class="note">Free, no sign-up. Everything you enter stays on this device.</p>
   </div>
   <div class="demo" aria-hidden="true">
@@ -658,17 +658,17 @@ let lastCoverageRows=[],lastCoverageRaw=[],lastDental=null;
 const icsEsc=t=>String(t).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
 function icsFold(l){const o=[];while(l.length>73){o.push(l.slice(0,73));l=' '+l.slice(73)}o.push(l);return o.join('\r\n')}
 const icsDate=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
-function buildICS(events){const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,''),L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Use Your Benefits//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
- for(const e of events){L.push('BEGIN:VEVENT',`UID:ub-${icsDate(e.start)}-${e.id}@useyourbenefits`,`DTSTAMP:${stamp}`,`DTSTART;VALUE=DATE:${icsDate(e.start)}`,`DTEND;VALUE=DATE:${icsDate(addDays(e.end||e.start,1))}`,`SUMMARY:${icsEsc(e.title)}`,`DESCRIPTION:${icsEsc(e.desc||'')}`,'TRANSP:TRANSPARENT');
+function buildICS(events){const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,''),L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Use What You Earn//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+ for(const e of events){L.push('BEGIN:VEVENT',`UID:ub-${icsDate(e.start)}-${e.id}@usewhatyouearn`,`DTSTAMP:${stamp}`,`DTSTART;VALUE=DATE:${icsDate(e.start)}`,`DTEND;VALUE=DATE:${icsDate(addDays(e.end||e.start,1))}`,`SUMMARY:${icsEsc(e.title)}`,`DESCRIPTION:${icsEsc(e.desc||'')}`,'TRANSP:TRANSPARENT');
   if(e.alarm)L.push('BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsEsc(e.alarm.text)}`,`TRIGGER:${e.alarm.trigger}`,'END:VALARM');L.push('END:VEVENT')}
  L.push('END:VCALENDAR');return L.map(icsFold).join('\r\n')+'\r\n'}
 function downloadICS(name,events){if(!events.length){toast('Nothing to add yet.');return}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([buildICS(events)],{type:'text/calendar;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove();toast(`Calendar file with ${events.length} event${events.length>1?'s':''} downloaded. Open it to add ${events.length>1?'them':'it'} to your calendar.`)}
 function icsTimeOff(){const{h}=V(),t=key(todayD()),ev=[];for(const b of breaks(V().y)){if(key(b.b)<t)continue;const uses=[b.vac?`${num(b.vac/h)} vacation day${b.vac===h?'':'s'}`:'',b.flt?`${num(b.flt/h)} personal day${b.flt===h?'':'s'}`:''].filter(Boolean).join(' and ');
-  const title=b.days===1?'Day off':`Time off: ${b.days} days`;ev.push({id:'off-'+key(b.a),start:b.a,end:b.b,title,desc:`${breakWhy(b,h)}. Uses ${uses}. Planned with Use Your Benefits.`,alarm:{trigger:'-P28D',text:`In 4 weeks: ${title}`}})}
+  const title=b.days===1?'Day off':`Time off: ${b.days} days`;ev.push({id:'off-'+key(b.a),start:b.a,end:b.b,title,desc:`${breakWhy(b,h)}. Uses ${uses}. Planned with Use What You Earn.`,alarm:{trigger:'-P28D',text:`In 4 weeks: ${title}`}})}
  downloadICS('time-off-plan.ics',ev)}
 function icsCoverage(){const t=todayD(),ev=[];for(const r of lastCoverageRaw){let d=D(r.y,r.m,1);if(d<t)d=t;if(r.y<t.getFullYear()||(r.y===t.getFullYear()&&r.m<t.getMonth()))continue;
-  ev.push({id:`book-${r.y}-${r.m}`,start:d,title:`Book this month: ${r.items.join(', ')}`,desc:(r.notes.length?r.notes.join(' ')+' ':'')+'Planned with Use Your Benefits. Check your plan for what is covered.',alarm:r.m>=9?{trigger:'-P21D',text:`Clinics get busy. Book next month's visits now: ${r.items.join(', ')}`}:{trigger:'PT9H',text:`Book this month: ${r.items.join(', ')}`}})}
- if(lastDental)for(const v of lastDental.visits)if(v>=t)ev.push({id:'dental-'+key(v),start:v,title:'Dental check-up is covered from today',desc:'Your plan covers your next check-up and cleaning from this date. Planned with Use Your Benefits.',alarm:{trigger:'-P14D',text:'Book your dental check-up. It is covered in 2 weeks.'}});
+  ev.push({id:`book-${r.y}-${r.m}`,start:d,title:`Book this month: ${r.items.join(', ')}`,desc:(r.notes.length?r.notes.join(' ')+' ':'')+'Planned with Use What You Earn. Check your plan for what is covered.',alarm:r.m>=9?{trigger:'-P21D',text:`Clinics get busy. Book next month's visits now: ${r.items.join(', ')}`}:{trigger:'PT9H',text:`Book this month: ${r.items.join(', ')}`}})}
+ if(lastDental)for(const v of lastDental.visits)if(v>=t)ev.push({id:'dental-'+key(v),start:v,title:'Dental check-up is covered from today',desc:'Your plan covers your next check-up and cleaning from this date. Planned with Use What You Earn.',alarm:{trigger:'-P14D',text:'Book your dental check-up. It is covered in 2 weeks.'}});
  downloadICS('coverage-plan.ics',ev)}
 function downloadCSV(name,text,label){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'}));a.download=name;a.click();try{navigator.clipboard.writeText(text).then(()=>toast(label+' downloaded and copied. Paste it into Excel if no file appeared.'),()=>{})}catch(e){}}
 function exportCoverageCSV(){if(!lastCoverageRows.length){toast('Nothing to export yet.');return}downloadCSV('coverage-plan.csv',['Month,Book,Heads-up',...lastCoverageRows.map(r=>r.map(c=>`"${c.replace(/"/g,"'")}"`).join(','))].join('\n'),'Visit schedule')}
