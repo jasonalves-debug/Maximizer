@@ -197,7 +197,7 @@ footer p{margin:0 0 8px;max-width:78ch}
 <section id="home" class="hero hidden">
   <div>
     <h1>Answer a few questions. Get your best days off.</h1>
-    <p class="lede">Tell us how much vacation you have. We pick the exact days that turn it into the longest breaks, then give you a calendar to add to your phone. Health coverage works the same way.</p>
+    <p class="lede">Enter how much vacation you have. The tool picks the exact days that turn it into the longest breaks, then gives you a calendar to add to your phone. Health coverage works the same way.</p>
     <div class="cta"><button class="btn" data-go="vacationView">Show me my best days off</button><button class="btn secondary" data-go="benefitsView">Plan my health coverage</button></div>
     <p class="note">Free, no sign-up. Everything you enter stays on this device.</p>
   </div>
@@ -740,7 +740,7 @@ const stepsV=[
   html:()=>`<div class="money"><input id="wEarn" type="number" min="0" inputmode="decimal" placeholder="0" value="${$('earned').value||''}"><span>${unitWord()}</span></div>`,
   read:r=>{const v=+val(r,'#wEarn');if(!(v>0))return'Enter how much you earn in a year.';$('earned').value=v}},
  {when:()=>daily(),q:'Is there a maximum your balance can reach?',help:'Many employers stop adding vacation once you hit a maximum, so those hours are lost. It is often the same as what you earn in a year.',
-  html:()=>{const c=$('cap').value,e=$('earned').value;wCap=c===''?(vState.capAsked?'none':''):(+c===+e?'same':'other');return optsHtml([['same','Yes, my yearly amount',`${num(+e)} ${unitWord()}.`],['other','Yes, a different amount'],['none','No maximum'],['unsure',"I'm not sure","We'll use your yearly amount, the most common rule."]],wCap,'grid2')+`<div class="wfield ${wCap==='other'?'':'hidden'}" id="wCapBox"><label for="wCap">Maximum</label><div class="money"><input id="wCap" type="number" min="0" inputmode="decimal" value="${c||''}"><span>${unitWord()}</span></div></div>`},
+  html:()=>{const c=$('cap').value,e=$('earned').value;wCap=c===''?(vState.capAsked?'none':''):(+c===+e?'same':'other');return optsHtml([['same','Yes, my yearly amount',`${num(+e)} ${unitWord()}.`],['other','Yes, a different amount'],['none','No maximum'],['unsure',"I'm not sure","Uses your yearly amount, the most common rule."]],wCap,'grid2')+`<div class="wfield ${wCap==='other'?'':'hidden'}" id="wCapBox"><label for="wCap">Maximum</label><div class="money"><input id="wCap" type="number" min="0" inputmode="decimal" value="${c||''}"><span>${unitWord()}</span></div></div>`},
   bind:(r,go)=>pickOpts(r,v=>{wCap=v;r.querySelector('#wCapBox').classList.toggle('hidden',v!=='other');if(v!=='other')go();else r.querySelector('#wCap').focus()}),
   read:r=>{if(!wCap)return'Pick one.';vState.capAsked=true;const e=$('earned').value;if(wCap==='none'){$('cap').value='';return}if(wCap==='other'){const v=+val(r,'#wCap');if(!(v>0))return'Enter your maximum.';$('cap').value=v;return}$('cap').value=e}},
  {when:()=>!daily(),q:()=>`How much vacation do you have for ${V().y}?`,help:()=>`Add anything carried over from last year to what you get this year. Three weeks is ${vState.unit==='days'?'15 days':num(15*dayH())+' hours'}.`,
@@ -787,7 +787,7 @@ const stepsB=[
    if(extras.some(e=>e.id===id))bState.gear[id]=on;else bState.selected=on?[...new Set([...bState.selected,id])]:bState.selected.filter(x=>x!==id)}),
   read:()=>nSel()||bState.gear.dental||bState.gear.glasses||bState.gear.orthotics?'':'Pick at least one.'},
  {when:()=>nSel()>1,q:'How does your plan pay for these?',help:'Your insurer\'s app or benefits booklet shows this. Most plans have one shared amount.',
-  html:()=>{wType=bState.planType==='mixed'?'':bState.planType;return optsHtml([['shared','One amount covers all of them','Most plans. Often called a paramedical maximum.'],['separate','Each one has its own amount','For example, $500 for massage and $500 for physio.'],['unsure',"I'm not sure","We'll treat it as one amount. You can change it later."]],wType)},
+  html:()=>{wType=bState.planType==='mixed'?'':bState.planType;return optsHtml([['shared','One amount covers all of them','Most plans. Often called a paramedical maximum.'],['separate','Each one has its own amount','For example, $500 for massage and $500 for physio.'],['unsure',"I'm not sure","Treated as one amount. You can change it later."]],wType)},
   bind:(r,go)=>pickOpts(r,v=>{wType=v;bState.planType=v==='separate'?'separate':'shared';go()}),
   read:()=>wType||bState.planType==='mixed'?'':'Pick one.'},
  {when:()=>nSel()>0,q:()=>nSel()===1?`How much does your plan give for ${bState.selected.map(id=>Benefits.services.find(s=>s.id===id).name.toLowerCase())[0]}?`:bState.planType==='separate'?'How much does your plan give for each?':'How much is in that shared amount?',
@@ -796,14 +796,14 @@ const stepsB=[
   read:r=>{if(nSel()>1&&bState.planType==='separate'){let bad=false;r.querySelectorAll('[data-wamt]').forEach(x=>{if(+x.value>0)bState.amounts[x.dataset.wamt]=+x.value;else bad=true});return bad?'Enter an amount for each one.':''}
    const v=+val(r,'#wShared');if(!(v>0))return'Enter an amount. Your insurer\'s app lists it, often as "paramedical maximum".';bState.shared=v;if(nSel()===1)bState.planType='shared'}},
  {when:()=>nSel()>0,q:'How much of each visit does your plan pay?',help:'Your benefits booklet shows this as a percentage.',
-  html:()=>optsHtml([['100','100%'],['90','90%'],['80','80%'],['unsure',"I'm not sure","We'll use 80%, the most common."]],bState.percent,'grid2'),
+  html:()=>optsHtml([['100','100%'],['90','90%'],['80','80%'],['unsure',"I'm not sure","Uses 80%, the most common."]],bState.percent,'grid2'),
   bind:(r,go)=>pickOpts(r,v=>{bState.percent=v==='unsure'?80:+v;go()})},
  {when:()=>nSel()>0||bState.gear.dental,q:'When does your plan year start over?',help:'This is when your amounts reset.',
   html:()=>{wReset=+bState.reset===0?'0':'other';return optsHtml([['0','January','Most plans'],['other','Another month']],wReset,'grid2')+`<div class="wfield ${wReset==='other'?'':'hidden'}" id="wResetBox"><label for="wReset">Which month?</label><select id="wReset" class="wsel">${Benefits.MONTHS.map((m,i)=>`<option value="${i}" ${+bState.reset===i?'selected':''}>${m}</option>`).join('')}</select></div>`},
   bind:(r,go)=>pickOpts(r,v=>{wReset=v;r.querySelector('#wResetBox').classList.toggle('hidden',v!=='other');if(v==='0')go()}),
   read:r=>{bState.reset=wReset==='0'?0:+val(r,'#wReset');bState.savedPlanYear=Benefits.planYear(new Date(),bState.reset).sy}},
  {when:()=>bState.gear.dental,q:'How often does your plan cover a dental check-up?',help:'Many adult plans cover one every 9 months, and kids every 6. Your booklet calls it a "recall exam".',
-  html:()=>{wDental=String(bState.gear.dentalEvery||'');return optsHtml([['6','Every 6 months'],['9','Every 9 months'],['12','Once a year'],['unsure',"I'm not sure","We'll use 9 months to be safe."]],wDental,'grid2')+`<div class="wfield"><label for="wDentalLast">When was your last check-up? <span class="sub">(optional)</span></label><input id="wDentalLast" type="date" value="${bState.gear.dentalLast||''}"></div>`},
+  html:()=>{wDental=String(bState.gear.dentalEvery||'');return optsHtml([['6','Every 6 months'],['9','Every 9 months'],['12','Once a year'],['unsure',"I'm not sure","Uses 9 months to be safe."]],wDental,'grid2')+`<div class="wfield"><label for="wDentalLast">When was your last check-up? <span class="sub">(optional)</span></label><input id="wDentalLast" type="date" value="${bState.gear.dentalLast||''}"></div>`},
   bind:r=>pickOpts(r,v=>{wDental=v}),
   read:r=>{bState.gear.dentalEvery=wDental==='unsure'||!wDental?9:+wDental;bState.gear.dentalLast=val(r,'#wDentalLast')}},
  {when:()=>bState.gear.glasses,q:'When did you last get glasses or contacts through your plan?',help:'Most plans cover a new pair every 2 years.',
