@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en-CA"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Use Your Benefits — plan your time off and health coverage</title>
+<meta name="description" content="Free planner for Canadian workers. Turn vacation days into long weekends and split your health coverage into realistic visits before it resets. No sign-up; nothing leaves your device.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1F4F6;--surface:#fff;--ink:#16212B;--muted:#56636E;--line:#DCE2E7;--field:#C9D2D9;--pine:#0E6656;--pine-deep:#0A4C40;--pine-soft:#DDEFEA;--gold:#F6BE1E;--gold-ink:#3D2E00;--peach:#FFCFAE;--peach-ink:#6A2C05;--sky:#D3E5F8;--sky-ink:#17466F;--rose:#B3261E;--rose-bg:#FBE7E5;--warn-bg:#FFF4D6;--warn-ink:#5C4200;--display:"Bricolage Grotesque",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font:17px/1.55 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.15;margin:0 0 10px}
+input,select,button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pine);outline-offset:2px}
+.wrap{max-width:1200px;margin:auto;padding:0 18px}
+.hidden{display:none!important}
+/* top bar */
+.topbar{position:sticky;top:0;z-index:6;background:rgba(241,244,246,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:14px;min-height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.02em;white-space:nowrap}
+.tabs{display:flex;gap:4px;background:#E2E8ED;padding:4px;border-radius:12px;margin-left:auto}
+.tab{border:0;background:none;padding:9px 18px;border-radius:9px;font-weight:700;color:var(--muted);cursor:pointer}
+.tab.active{background:#fff;color:var(--ink);box-shadow:0 1px 2px #16212b22}
+.linkbtn{background:none;border:0;color:var(--muted);font-size:15px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px 8px;border-radius:8px;white-space:nowrap}
+.linkbtn.armed{color:#fff;background:var(--rose);text-decoration:none}
+/* hero */
+.hero{padding:60px 0 64px;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(46px,7vw,84px);font-weight:800;letter-spacing:-.035em;line-height:.98;margin:0 0 22px}
+.lede{font-size:21px;color:#33414D;max-width:32ch;margin:0 0 28px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+.cta .btn{font-size:19px;padding:16px 24px;border-radius:14px}
+.note{color:var(--muted);font-size:16px;margin:0}
+.demo{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px}
+.demo h3{font-size:15px;font-family:Figtree,sans-serif;font-weight:700;color:var(--muted);letter-spacing:0;margin:0 0 12px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.tile{border-radius:14px;padding:12px 10px 14px;min-height:92px;display:flex;flex-direction:column;justify-content:space-between}
+.tile small{font-size:14px;font-weight:600}
+.tile b{font-family:var(--display);font-size:34px;font-weight:800;line-height:1}
+.tile.you{background:var(--gold);color:var(--gold-ink)}
+.tile.wk{background:#EEF2F5;color:#6B7883}
+.tile.hol{background:var(--sky);color:var(--sky-ink)}
+.demo-cap{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0}
+.demo hr{border:0;border-top:1px solid var(--line);margin:22px 0}
+.dots{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.dots i{width:22px;height:22px;border-radius:50%;background:var(--pine)}
+/* views */
+.view{display:none;padding:28px 0 40px}.view.active{display:block}
+.viewhead{margin-bottom:22px}
+.viewhead h2{font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-.03em;margin:0 0 4px}
+.viewhead p{margin:0;color:var(--muted);font-size:18px;max-width:62ch}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px}
+.step{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:20px;font-weight:700;margin:26px 0 12px;padding-top:22px;border-top:1px solid var(--line)}
+.step:first-child{margin-top:0;padding-top:0;border:0}
+.step i{font-style:normal;font-family:Figtree,sans-serif;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:800;flex:0 0 auto}
+.field{margin:0 0 14px}
+.field>label,.lbl{display:block;font-size:15px;font-weight:700;margin-bottom:5px}
+.field input:not([type=checkbox]),.field select{width:100%;padding:11px 12px;border:1.5px solid var(--field);border-radius:10px;background:#fff}
+.field input:focus,.field select:focus,.pricerow input:focus{outline:none;border-color:var(--pine);box-shadow:0 0 0 3px var(--pine-soft)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hint{font-size:15px;color:var(--muted);margin:5px 0 12px}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:700;cursor:pointer;background:var(--pine);color:#fff}
+.btn:hover{background:var(--pine-deep)}
+.btn.secondary{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--field)}
+.btn.secondary:hover{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.btn.danger{background:var(--rose-bg);color:var(--rose)}
+.btn.small{padding:8px 13px;font-size:15px}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.wide{width:100%;font-size:18px;margin-top:4px}
+.stack{display:flex;gap:8px;flex-wrap:wrap}
+.check{display:flex;gap:10px;align-items:flex-start;margin:9px 0;cursor:pointer}
+.check input{width:20px;height:20px;margin:3px 0 0;flex:0 0 auto;accent-color:var(--pine)}
+details{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0}
+summary{cursor:pointer;font-weight:700}
+.seg{display:flex;background:#E2E8ED;padding:4px;border-radius:12px;gap:4px}
+.seg button{flex:1;border:0;padding:10px;border-radius:9px;font-weight:700;cursor:pointer;background:none;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px #16212b22}
+.seg button[data-mode=vacation].on{background:var(--gold);color:var(--gold-ink)}
+.seg button[data-mode=float].on{background:var(--peach);color:var(--peach-ink)}
+.sub{font-size:14px;color:var(--muted);font-weight:500}
+/* metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.metric{background:var(--surface);padding:16px;border:1px solid var(--line);border-radius:16px}
+.metric span{font-size:15px;color:var(--muted);font-weight:600;display:block}
+.metric b{display:block;font-family:var(--display);font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:4px 0 2px}
+.metric small{font-size:14px;color:var(--muted)}
+.alert{padding:13px 16px;border-radius:12px;margin-bottom:10px;background:var(--warn-bg);color:var(--warn-ink)}
+.alert.good{background:var(--pine-soft);color:var(--pine-deep)}
+/* calendar */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:15px;margin:0 0 14px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px}
+.calendar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.month{border:1px solid var(--line);border-radius:14px;background:#fff}
+.month h3{margin:0;padding:12px 12px 4px;font-size:18px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);padding:4px 6px 8px;gap:3px}
+.dow{text-align:center;font-size:12px;color:var(--muted);font-weight:700;padding:2px}
+.day{min-height:40px;border-radius:8px;padding:4px 5px;font-size:15px;position:relative;border:1.5px solid transparent;background:none;text-align:left;line-height:1.2}
+button.day{cursor:pointer}
+button.day:hover,button.day:focus-visible{border-color:var(--ink);outline:none}
+.day.weekend{color:#9AA5AE}
+.day.holiday{background:var(--sky);color:var(--sky-ink);font-weight:700}
+.day.vacation{background:var(--gold);color:var(--gold-ink);font-weight:800}
+.day.float{background:var(--peach);color:var(--peach-ink);font-weight:800}
+.day.half{background-image:linear-gradient(135deg,transparent 50%,#fff 50%)}
+.day.week{box-shadow:inset 0 0 0 2px var(--gold-ink)}
+.day .mk{position:absolute;right:4px;bottom:2px;font-size:11px;font-weight:800}
+/* tables */
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);font-size:16px;vertical-align:top}
+th{color:var(--muted);font-size:14px;font-weight:700}
+.vac{color:#7A5A00;font-weight:700}.flt{color:var(--peach-ink);font-weight:700}
+.section-gap{margin-top:20px}
+/* coverage */
+.service-card{margin-bottom:12px}
+.service-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.service-head h3{font-size:22px;margin:4px 0}
+.counter{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.counter .btn{width:48px;height:48px;padding:0;font-size:24px;border-radius:50%}
+.counter b{min-width:38px;text-align:center;font-family:var(--display);font-size:30px;font-weight:800}
+.group-title{font-family:Figtree,sans-serif;font-size:16px;font-weight:800;color:var(--pine);letter-spacing:0;margin:26px 0 10px}
+.status{font-weight:700;margin:12px 0 4px}
+.warning{color:var(--rose);font-size:15px}
+.service-copy{font-size:15px;color:var(--muted);max-width:64ch}
+.tagline{display:inline-block;font-size:13px;font-weight:700;color:var(--pine-deep);background:var(--pine-soft);padding:2px 9px;border-radius:99px}
+.own{border-left:5px solid var(--gold)}
+.pricerow{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:15px;color:var(--muted)}
+.pricerow label{display:flex;align-items:center;gap:6px}
+.pricerow input{width:92px;padding:7px 9px;border:1.5px solid var(--field);border-radius:9px;background:#fff}
+.schedule-note{font-size:15px;color:#8A4B00;font-weight:700}
+.gear-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+footer{border-top:1px solid var(--line);padding:28px 0 64px;color:var(--muted);font-size:15px}
+footer p{margin:0 0 8px;max-width:78ch}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;box-shadow:0 6px 24px #0004;z-index:9;width:max-content;max-width:min(92vw,560px)}
+#toast button{background:none;border:0;color:var(--gold);font-weight:800;cursor:pointer;padding:4px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}.calendar{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr;gap:36px;padding:40px 0 48px}}
+@media(max-width:640px){body{font-size:18px}.bar{flex-wrap:wrap;gap:6px 10px;padding-top:8px}.tabs{order:3;width:100%;margin:0 0 10px}.tab{flex:1}.linkbtn{margin-left:auto}.cta .btn{width:100%}.calendar{grid-template-columns:1fr}.day{min-height:46px;font-size:17px}.gear-grid{grid-template-columns:1fr}.hide-sm{display:none}th,td{padding:9px 4px}.service-head{flex-direction:column}.tile b{font-size:28px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+@media print{.topbar,#home,.controls,.btn,#toast,.seg,footer{display:none!important}.view{display:none}.view.active{display:block}.grid{display:block}.calendar{grid-template-columns:repeat(3,1fr)}body{background:#fff;font-size:13px}.month{break-inside:avoid}.day{min-height:24px;font-size:11px}}
+</style></head><body>
+<header class="topbar"><div class="wrap bar">
+  <a href="#" class="brand" id="homeLink"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#16212B"/><circle cx="16" cy="19" r="7" fill="#F6BE1E"/><rect x="5" y="19" width="22" height="9" fill="#16212B"/><path d="M7 19.5h18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>Use Your Benefits</a>
+  <nav class="tabs" aria-label="Planners"><button class="tab" data-view="benefitsView">Coverage</button><button class="tab" data-view="vacationView">Time off</button></nav>
+  <button class="linkbtn" id="resetAll">Start over</button>
+</div></header>
+
+<main class="wrap">
+<!-- ============ HOME ============ -->
+<section id="home" class="hero hidden">
+  <div>
+    <h1>Use what you've earned.</h1>
+    <p class="lede">Unused vacation and health coverage disappear every year. Enter what you have and get a plan to use it before it resets.</p>
+    <div class="cta"><button class="btn" data-go="benefitsView">Plan my health coverage</button><button class="btn secondary" data-go="vacationView">Plan my time off</button></div>
+    <p class="note">Free, no sign-up. Everything you enter stays on this device.</p>
+  </div>
+  <div class="demo" aria-hidden="true">
+    <h3>Victoria Day weekend</h3>
+    <div class="tiles"><div class="tile you"><small>Fri</small><b>21</b></div><div class="tile wk"><small>Sat</small><b>22</b></div><div class="tile wk"><small>Sun</small><b>23</b></div><div class="tile hol"><small>Mon</small><b>24</b></div></div>
+    <p class="demo-cap">Take 1 vacation day, get 4 days off.</p>
+    <hr>
+    <h3>$1,500 massage coverage at 80%</h3>
+    <div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="demo-cap">14 visits, about one every 3 to 4 weeks.</p>
+  </div>
+</section>
+
+<!-- ============ TIME OFF ============ -->
+<section id="vacationView" class="view">
+<div class="viewhead"><h2>Plan your time off</h2><p>Enter your balances, build a plan, then tap the calendar to make it yours.</p></div>
+<div class="grid">
+<aside class="card controls">
+  <div class="step"><i>1</i>What you have</div>
+  <div class="row"><div class="field"><label for="province">Where you work</label><select id="province"></select></div><div class="field"><label for="year">Year</label><input id="year" type="number"></div></div>
+  <div class="field"><span class="lbl">Your balances are in</span><div class="seg" role="group" aria-label="Balance units"><button data-unit="hours">Hours</button><button data-unit="days">Days</button></div></div>
+  <div class="field"><label for="dayHours">Hours in your workday</label><input id="dayHours" type="number" step=".25" min="1" value="7.5"></div>
+  <div class="field"><label for="startVacation">Vacation carried over from last year (<span class="u">hrs</span>)</label><input id="startVacation" type="number" min="0" placeholder="0"></div>
+  <div class="field"><label for="earned">Vacation you get this year (<span class="u">hrs</span>)</label><input id="earned" type="number" min="0" placeholder="0"><p class="hint" id="earnedHint"></p></div>
+  <div class="field"><label for="floatTotal">Personal or float time this year (<span class="u">hrs</span>)</label><input id="floatTotal" type="number" min="0" placeholder="0"><p class="hint">Time that's lost if you don't use it. Leave blank if you don't get any.</p></div>
+  <div class="field"><label for="target">Vacation to save for next year (<span class="u">hrs</span>)</label><input id="target" type="number" min="0" placeholder="0"><p class="hint">Only if your employer lets vacation carry over.</p></div>
+
+  <div class="step"><i>2</i>Build a plan</div>
+  <div class="field"><label for="fullWeeks">Full weeks off</label><select id="fullWeeks"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option></select></div>
+  <div id="weekInputs"></div>
+  <div class="field"><label for="strategy">Spread the other days as</label><select id="strategy"><option value="fridays">Long weekends on Fridays</option><option value="mondays">Long weekends on Mondays</option><option value="mix">Long weekends, Fridays and Mondays</option></select></div>
+  <label class="check"><input type="checkbox" id="bridges" checked><span>Use days next to holidays first <span class="sub">(the Friday before a Monday holiday gives you 4 days off for 1)</span></span></label>
+  <details><summary>Holidays you get</summary><p class="hint" id="holidayNote"></p><div id="holidayPicker"></div></details>
+  <button class="btn wide" id="buildBtn">Build my plan</button>
+
+  <div class="step"><i>3</i>Adjust on the calendar</div>
+  <div class="seg" role="group" aria-label="What a tap adds"><button data-mode="vacation" class="on">Vacation</button><button data-mode="float">Personal / float</button></div>
+  <p class="hint">Tap a workday to add it. Tap again for a half day, and a third time to remove it.</p>
+  <div class="stack"><button class="btn secondary small" id="clearBtn">Clear this year</button><button class="btn secondary small" onclick="window.print()">Print</button><button class="btn secondary small" id="csvBtn">Export CSV</button></div>
+</aside>
+<section>
+  <div class="metrics">
+    <div class="metric"><span>Left at year-end</span><b id="mEnd">0</b><small id="mEndSub"></small></div>
+    <div class="metric"><span>Vacation planned</span><b id="mVac">0</b><small id="mVacSub"></small></div>
+    <div class="metric"><span>Personal / float</span><b id="mFlt">0</b><small id="mFltSub"></small></div>
+    <div class="metric"><span>Longest break</span><b id="mLong">—</b><small id="mLongSub"></small></div>
+  </div>
+  <div id="alerts"></div>
+  <div class="card">
+    <div class="legend"><span><i class="sw" style="background:var(--gold)"></i>Vacation</span><span><i class="sw" style="background:var(--peach)"></i>Personal / float</span><span><i class="sw" style="background:linear-gradient(135deg,var(--gold) 50%,#fff 50%);border:1px solid #ccc"></i>Half day</span><span><i class="sw" style="background:var(--sky)"></i>Holiday</span><span><i class="sw" style="box-shadow:inset 0 0 0 2px var(--gold-ink)"></i>Full week</span></div>
+    <div id="calendar" class="calendar"></div>
+  </div>
+  <div class="card section-gap"><h2>Your breaks</h2><table><thead><tr><th>When</th><th>Days off</th><th>Uses</th><th class="hide-sm">Why it works</th><th></th></tr></thead><tbody id="breakRows"></tbody></table></div>
+</section>
+</div></section>
+
+<!-- ============ COVERAGE ============ -->
+<section id="benefitsView" class="view">
+<div class="viewhead"><h2>Plan your health coverage</h2><p>Tick what you'd use, from massage to dental check-ups, and see how many visits your plan covers and when to book them.</p></div>
+<div class="grid">
+<aside class="card controls">
+  <div class="step"><i>1</i>What you'd use</div>
+  <div id="servicePicker"></div>
+  <div id="gearPicker"></div>
+  <div class="step"><i>2</i>Your plan</div>
+  <div class="field"><label for="bPlanType">How your amounts work</label><select id="bPlanType"><option value="shared">One amount covers all of them</option><option value="separate">Each service has its own amount</option><option value="mixed">Some share, some have their own</option></select></div>
+  <div id="sharedWrap" class="field"><label for="bShared">Amount to plan with ($)</label><input id="bShared" type="number" min="0" step="50" placeholder="e.g. 1500"><p class="hint">Planning the rest of this year? Use what's left in your insurer's app. Planning a new year? Use the full yearly maximum, often called the paramedical maximum.</p></div>
+  <div class="field"><label for="bPercent">Plan pays this % of each visit</label><select id="bPercent"><option>100</option><option>90</option><option>85</option><option selected>80</option><option>70</option><option>50</option></select><p class="hint">80% is common. Your benefits booklet lists it.</p></div>
+  <div class="row"><div class="field"><label for="bReset">Plan resets in</label><select id="bReset"></select></div><div class="field"><label for="bPeriod">Plan for</label><select id="bPeriod"><option value="auto">Automatic</option><option value="rest">Rest of this plan year</option><option value="next">Next plan year</option></select></div></div>
+  <div id="ownAmounts"></div>
+  <div id="gearInputs"></div>
+</aside>
+<section>
+  <div id="newYearFlag" class="alert hidden">It's a new plan year, so your amounts have probably reset. Check your insurer's app and update them.</div>
+  <div id="periodFlag" class="alert hidden"></div>
+  <div id="bEmpty" class="card"><h2>Start by ticking what you'd use</h2><p>Not sure what something is? Each service gets a plain-English description once you tick it.</p></div>
+  <div id="bResults" class="hidden">
+    <div class="card"><h2 id="bHeadline"></h2><p id="bHelp"></p><div id="bProgress" class="alert good" style="margin:0"></div></div>
+    <div id="serviceResults"></div>
+  </div>
+  <div id="dentalResults"></div>
+  <div id="scheduleCard" class="card hidden"><h2>When to book</h2><p id="scheduleIntro"></p><table><thead><tr><th>Month</th><th>Book</th><th>Heads-up</th></tr></thead><tbody id="scheduleRows"></tbody></table></div>
+  <div id="gearResults" class="gear-grid"></div>
+</section>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <p><b>Your privacy:</b> everything you enter is saved only in this browser, on this device. Nothing is sent anywhere.</p>
+  <p>Planning estimates only, not financial or medical advice. Visit prices start at typical Ontario rates (checked 2026), so change them to your clinic's. Holidays are a starting point, so check what your employer gives. Always confirm coverage with your insurer.</p>
+</div></footer>
+<div id="toast" class="hidden" role="status"><span id="toastText"></span><button id="toastBtn" class="hidden">Undo</button></div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id),$$=q=>[...document.querySelectorAll(q)];
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const pad=n=>String(n).padStart(2,'0'),D=(y,m,d)=>new Date(y,m,d,12);
+const key=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=k=>{const[y,m,d]=k.split('-').map(Number);return D(y,m-1,d)};
+const addDays=(d,n)=>D(d.getFullYear(),d.getMonth(),d.getDate()+n);
+const isWkd=d=>d.getDay()===0||d.getDay()===6;
+const fmt=(d,o={weekday:'short',month:'short',day:'numeric'})=>d.toLocaleDateString('en-CA',o);
+const num=x=>(Math.round(x*100)/100).toLocaleString('en-CA');
+let toastTimer;
+function toast(text,undo){$('toastText').textContent=text;$('toastBtn').classList.toggle('hidden',!undo);$('toastBtn').onclick=()=>{undo();$('toast').classList.add('hidden')};$('toast').classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),undo?8000:4000)}
+
+/* ---------- holidays ---------- */
+function nthWeekday(y,m,dow,n){let d=D(y,m,1);while(d.getDay()!==dow)d=addDays(d,1);return addDays(d,7*(n-1))}
+function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);return D(y,Math.floor((h+l-7*m+114)/31)-1,((h+l-7*m+114)%31)+1)}
+const HOLIDAYS=[
+ {id:'newyear',name:"New Year's Day",date:y=>D(y,0,1)},
+ {id:'family',name:'Family Day (February holiday)',date:y=>nthWeekday(y,1,1,3)},
+ {id:'goodfri',name:'Good Friday',date:y=>addDays(easter(y),-2)},
+ {id:'eastermon',name:'Easter Monday',date:y=>addDays(easter(y),1)},
+ {id:'victoria',name:'Victoria Day',date:y=>{let d=D(y,4,24);while(d.getDay()!==1)d=addDays(d,-1);return d}},
+ {id:'stjean',name:'Saint-Jean-Baptiste Day',date:y=>D(y,5,24)},
+ {id:'canada',name:'Canada Day',date:y=>D(y,6,1)},
+ {id:'civic',name:'August civic holiday',date:y=>nthWeekday(y,7,1,1)},
+ {id:'labour',name:'Labour Day',date:y=>nthWeekday(y,8,1,1)},
+ {id:'truth',name:'Truth and Reconciliation Day',date:y=>D(y,8,30)},
+ {id:'thanks',name:'Thanksgiving',date:y=>nthWeekday(y,9,1,2)},
+ {id:'remembrance',name:'Remembrance Day',date:y=>D(y,10,11)},
+ {id:'christmas',name:'Christmas Day',date:y=>D(y,11,25)},
+ {id:'boxing',name:'Boxing Day',date:y=>D(y,11,26)}];
+const PROVINCES={ON:['Ontario','newyear family goodfri victoria canada labour thanks christmas boxing'],BC:['British Columbia','newyear family goodfri victoria canada civic labour truth thanks remembrance christmas'],AB:['Alberta','newyear family goodfri victoria canada labour thanks remembrance christmas'],SK:['Saskatchewan','newyear family goodfri victoria canada civic labour thanks remembrance christmas'],MB:['Manitoba','newyear family goodfri victoria canada labour truth thanks christmas'],QC:['Quebec','newyear goodfri victoria stjean canada labour thanks christmas'],NB:['New Brunswick','newyear family goodfri canada civic labour remembrance christmas'],NS:['Nova Scotia','newyear family goodfri canada labour remembrance christmas'],PE:['Prince Edward Island','newyear family goodfri canada labour truth remembrance christmas'],NL:['Newfoundland and Labrador','newyear goodfri canada labour remembrance christmas'],FED:['Federally regulated job','newyear goodfri victoria canada labour truth thanks remembrance christmas boxing']};
+let vState={selected:{},weekStarts:[],holidays:{},mode:'vacation',bridges:true,province:'ON',unit:'hours'};
+const prov=()=>PROVINCES[vState.province]||PROVINCES.ON;
+const holOn=id=>vState.holidays[id]??prov()[1].split(' ').includes(id);
+const holCache={};
+function holidays(y){const sig=y+vState.province+JSON.stringify(vState.holidays);if(holCache[sig])return holCache[sig];const o={},weekend=[];
+ for(const h of HOLIDAYS){if(!holOn(h.id))continue;const d=h.date(y);if(isWkd(d))weekend.push([d,h.name]);else o[key(d)]=h.name}
+ for(const[d,n]of weekend){let s=addDays(d,1);while(isWkd(s)||o[key(s)])s=addDays(s,1);o[key(s)]=n+' (observed)'}
+ return holCache[sig]=o}
+const holidayAt=k=>holidays(+k.slice(0,4))[k];
+
+/* ---------- time-off state ---------- */
+const INPUTS=['year','dayHours','startVacation','earned','floatTotal','strategy','fullWeeks','target'],UNIT_FIELDS=['startVacation','earned','floatTotal','target'];
+const dayH=()=>+$('dayHours').value||7.5;
+function V(){const h=dayH(),m=vState.unit==='days'?h:1;return{y:+$('year').value||new Date().getFullYear(),h,start:(+$('startVacation').value||0)*m,annual:(+$('earned').value||0)*m,floatAvail:(+$('floatTotal').value||0)*m,target:(+$('target').value||0)*m}}
+const fmtU=hrs=>{const h=dayH();if(vState.unit==='days'){const d=hrs/h;return num(d)+(Math.abs(d-1)<1e-9?' day':' days')}return num(hrs)+' h'};
+function saveV(){const inputs={};INPUTS.forEach(id=>inputs[id]=$(id).value);store.set('useYourDaysPlan',{v:2,selected:vState.selected,weekStarts:vState.weekStarts,holidays:vState.holidays,bridges:vState.bridges,province:vState.province,unit:vState.unit});store.set('useYourDaysInputs',inputs)}
+function loadV(){const p=store.get('useYourDaysPlan');if(p){if(p.v===2)Object.assign(vState,p);else{const wk=new Set(p.weeks||[]);for(const[k,t]of Object.entries(p.selected||{})){vState.selected[k]={t,f:1};if(wk.has(k))vState.selected[k].w=1}}}
+ const o=store.get('useYourDaysInputs');if(!o)return;
+ if(o.earned===undefined&&o.weeks)o.earned=+o.weeks*5*(+o.dayHours||7.5);
+ if(o.floatTotal===undefined&&(o.startFloat||o.floatCredit))o.floatTotal=(+o.startFloat||0)+(+o.floatCredit||0)*(+o.floatCredits||0);
+ if(o.strategy==='balanced')o.strategy='mix';
+ if(o.weekStart&&!vState.weekStarts.length)vState.weekStarts=[o.weekStart];
+ INPUTS.forEach(k=>{if(o[k]!=null)$(k).value=o[k]})}
+function setUnit(u,convert){const h=dayH();
+ if(convert&&u!==vState.unit)UNIT_FIELDS.forEach(id=>{const el=$(id);if(el.value!=='')el.value=Math.round((u==='days'?+el.value/h:+el.value*h)*100)/100});
+ vState.unit=u;$$('[data-unit]').forEach(b=>b.classList.toggle('on',b.dataset.unit===u));$$('.u').forEach(s=>s.textContent=u==='days'?'days':'hrs');
+ UNIT_FIELDS.forEach(id=>$(id).step=u==='days'?'.5':'.25');
+ $('earnedHint').textContent=u==='days'?'3 weeks is 15 days.':`3 weeks is ${num(15*h)} h with your workday.`}
+
+function snapMonday(k,y){let d=parse(k);if(d.getFullYear()!==y)d=D(y,d.getMonth(),d.getDate());const w=d.getDay();return addDays(d,w===0?1:w===6?2:1-w)}
+function defaultWeeks(y){const marchBreak=addDays(nthWeekday(y,2,5,2),3);return[nthWeekday(y,7,1,3),marchBreak,nthWeekday(y,9,1,3),nthWeekday(y,5,1,4)].map(key)}
+function weekStart(i,y){const w=vState.weekStarts[i];return key(snapMonday(w&&w.startsWith(y+'-')?w:defaultWeeks(y)[i],y))}
+function renderWeekInputs(){const n=+$('fullWeeks').value||0,y=V().y;let h='';for(let i=0;i<n;i++)h+=`<div class="field"><label>Week ${n>1?i+1+' ':''}starts Monday</label><input type="date" data-week="${i}" value="${weekStart(i,y)}"></div>`;
+ $('weekInputs').innerHTML=h;$$('[data-week]').forEach(x=>x.onchange=()=>{vState.weekStarts[+x.dataset.week]=x.value?key(snapMonday(x.value,V().y)):'';x.value=weekStart(+x.dataset.week,V().y);saveV()})}
+function renderHolidayPicker(){const y=V().y;$('holidayNote').textContent=`Statutory holidays for ${prov()[0]}. Tick any extra days your employer gives. Weekend holidays move to the next workday.`;
+ $('holidayPicker').innerHTML=HOLIDAYS.map(h=>`<label class="check"><input type="checkbox" data-hol="${h.id}" ${holOn(h.id)?'checked':''}><span>${h.name} <span class="sub">${fmt(h.date(y),{month:'short',day:'numeric'})}</span></span></label>`).join('');
+ $$('[data-hol]').forEach(x=>x.onchange=()=>{vState.holidays[x.dataset.hol]=x.checked;dropHolidayDays();saveV();render()})}
+function dropHolidayDays(){for(const k of Object.keys(vState.selected))if(holidayAt(k))delete vState.selected[k]}
+
+function clickDay(k){const S=vState.selected,cur=S[k],m=vState.mode;
+ if(!cur)S[k]={t:m,f:1};else if(cur.t!==m)S[k]={t:m,f:cur.f};else if(cur.f===1)S[k]={t:m,f:.5};else delete S[k];
+ saveV();render()}
+
+/* ---------- plan builder ---------- */
+function buildPlan(){const before=JSON.stringify(vState.selected),{y,h,start,annual,floatAvail,target}=V(),hol=holidays(y),S=vState.selected,strat=$('strategy').value;
+ if(start+annual+floatAvail<=0){toast('Enter your vacation or personal time in step 1 first.');$('startVacation').focus();return}
+ for(const k of Object.keys(S))if(k.startsWith(y+'-'))delete S[k];
+ let vac=Math.max(0,Math.floor((start+annual-target)/h+1e-9)),flt=Math.floor(floatAvail/h+1e-9);const fltHalf=floatAvail-flt*h>=h/2-1e-9,notes=[];
+ const free=k=>k.startsWith(y+'-')&&!isWkd(parse(k))&&!hol[k]&&!S[k];
+ const take=k=>{if(!free(k))return false;if(flt>0){S[k]={t:'float',f:1};flt--;return true}if(vac>0){S[k]={t:'vacation',f:1};vac--;return true}return false};
+ for(let i=0;i<(+$('fullWeeks').value||0);i++){const mon=parse(weekStart(i,y)),days=[0,1,2,3,4].map(j=>key(addDays(mon,j))).filter(free);
+  if(days.length>vac){notes.push(`Not enough vacation for week ${i+1}, so it was left out.`);break}days.forEach(k=>S[k]={t:'vacation',f:1,w:1});vac-=days.length}
+ if(vState.bridges){const gap=[];for(let d=24;d<=31;d++){const k=key(D(y,11,d));if(free(k))gap.push(k)}
+  if(gap.length&&gap.length<=4)gap.forEach(take);
+  for(const[k]of Object.entries(hol).sort()){const d=parse(k);if(d.getMonth()===11&&d.getDate()>=24)continue;const dow=d.getDay(),mon=strat==='mondays';
+   const opts={1:mon?[1,-3]:[-3,1],2:[-1],4:[1],5:mon?[3,-1]:[-1,3]}[dow]||[];
+   for(const o of opts){const kk=key(addDays(d,o));if(free(kk)){take(kk);break}}}}
+ const near=k=>{const d=parse(k);for(let j=-3;j<=3;j++)if(S[key(addDays(d,j))])return true;return false};
+ const spreadPick=filter=>{const c=[];for(let d=D(y,0,1);d.getFullYear()===y;d=addDays(d,1)){const k=key(d);if(free(k)&&filter(d,k))c.push(k)}const n=Math.min(vac+flt,c.length);for(let i=0;i<n;i++)take(c[Math.floor((i+.5)*c.length/n)])};
+ const want=strat==='mondays'?[1]:strat==='mix'?[1,5]:[5];
+ if(vac+flt>0)spreadPick((d,k)=>want.includes(d.getDay())&&!near(k));
+ if(vac+flt>0)spreadPick(d=>want.includes(d.getDay()));
+ if(vac+flt>0)spreadPick(()=>true);
+ const vacHalf=start+annual>target&&(start+annual-target)/h-Math.floor((start+annual-target)/h+1e-9)>=.5-1e-9;
+ const half=t=>{let d=D(y,11,23);while(d.getFullYear()===y&&!(d.getDay()===5&&free(key(d))))d=addDays(d,-1);if(d.getFullYear()===y)S[key(d)]={t,f:.5}};
+ if(fltHalf)half('float');if(vacHalf)half('vacation');
+ saveV();render();if(innerWidth<1000)document.querySelector('#vacationView .metrics').scrollIntoView({behavior:'smooth'});
+ toast(notes[0]||`Plan built. It replaced any days you had in ${y}.`,()=>{vState.selected=JSON.parse(before);saveV();render()})}
+
+/* ---------- breaks ---------- */
+function breaks(y){const S=vState.selected,h=V().h,off=d=>{const k=key(d);return isWkd(d)||holidayAt(k)||S[k]},out=[],seen=new Set();
+ for(const k of Object.keys(S).filter(k=>k.startsWith(y+'-')).sort()){if(seen.has(k))continue;let a=parse(k),b=parse(k);
+  while(off(addDays(a,-1)))a=addDays(a,-1);while(off(addDays(b,1)))b=addDays(b,1);
+  const br={a,b,days:0,vac:0,flt:0,half:false,hol:[],keys:[],week:false};
+  for(let d=a;d<=b;d=addDays(d,1)){const kk=key(d);br.days++;if(S[kk]){seen.add(kk);br.keys.push(kk);const hrs=S[kk].f*h;if(S[kk].t==='float')br.flt+=hrs;else br.vac+=hrs;if(S[kk].f<1)br.half=true;if(S[kk].w)br.week=true}else if(holidayAt(kk))br.hol.push(holidayAt(kk).replace(' (observed)',''))}
+  out.push(br)}return out}
+function breakWhy(b,h){const used=(b.vac+b.flt)/h;if(b.days===1)return b.half?'Half day':'A day off midweek';if(used<1)return'Half day to start the weekend early';
+ const hol=[...new Set(b.hol)];let s=b.week?'Your full week off':b.days>=5?`${b.days} days in a row`:'Long weekend';
+ if(hol.length)s+=` with ${hol.join(' and ')}`;if(b.days/used>=3&&!b.week)s+=`, ${b.days} days off for ${num(used)}`;return s}
+
+/* ---------- render ---------- */
+function render(){const{y,h,start,annual,floatAvail,target}=V(),hol=holidays(y),S=vState.selected;setUnit(vState.unit,false);
+ const cal=$('calendar');cal.innerHTML='';
+ for(let m=0;m<12;m++){let html=`<div class="month"><h3>${D(y,m,1).toLocaleString('en-CA',{month:'long'})}</h3><div class="days">`+['S','M','T','W','T','F','S'].map(x=>`<div class="dow">${x}</div>`).join('');
+  for(let i=0;i<D(y,m,1).getDay();i++)html+='<div></div>';
+  for(let d=1,n=new Date(y,m+1,0).getDate();d<=n;d++){const dt=D(y,m,d),k=key(dt),wk=isWkd(dt),s=S[k];
+   const cls='day'+(wk?' weekend':'')+(hol[k]?' holiday':'')+(s?' '+s.t+(s.f<1?' half':''):'')+(s&&s.w?' week':'');
+   const label=s?(s.f<1?'half day ':'')+(s.t==='float'?'personal day':'vacation'):'tap to plan time off';
+   html+=wk||hol[k]?`<div class="${cls}" title="${hol[k]||''}">${d}</div>`:`<button class="${cls}" data-k="${k}" title="${label}" aria-label="${fmt(dt)}: ${label}">${d}${s&&s.f<1?'<span class="mk">½</span>':''}</button>`}
+  cal.insertAdjacentHTML('beforeend',html+'</div></div>')}
+ cal.querySelectorAll('button[data-k]').forEach(b=>b.onclick=()=>clickDay(b.dataset.k));
+ let vac=0,flt=0;for(const[k,s]of Object.entries(S))if(k.startsWith(y+'-')){if(s.t==='float')flt+=s.f*h;else vac+=s.f*h}
+ const avail=start+annual,end=avail-vac,bs=breaks(y),longest=bs.reduce((a,b)=>b.days>(a?a.days:0)?b:a,null);
+ $('mEnd').textContent=fmtU(end);$('mEndSub').textContent=target?`Goal: save ${fmtU(target)}`:'Goal: use it all';
+ $('mVac').textContent=num(vac/h)+(vac===h?' day':' days');$('mVacSub').textContent=`of ${fmtU(avail)} you have`;
+ $('mFlt').textContent=floatAvail?fmtU(flt):'—';$('mFltSub').textContent=floatAvail?`of ${fmtU(floatAvail)} you have`:'None entered';
+ $('mLong').textContent=longest?longest.days+' days':'—';$('mLongSub').textContent=longest?fmt(longest.a,{month:'short',day:'numeric'})+' to '+fmt(longest.b,{month:'short',day:'numeric'}):'';
+ if(start+annual+floatAvail===0){$('alerts').innerHTML='<div class="alert">Start with step 1: enter your vacation and any personal time, then tap <b>Build my plan</b>. You can also just tap days on the calendar.</div>';renderBreaks(bs,h,S);saveV();return}
+ const al=[];
+ if(end<0)al.push(['',`This plan uses ${fmtU(-end)} more vacation than you have.`]);
+ else if(end>target+h/2-1e-9){const extra=Math.floor((end-target)/h*2+1e-9)/2;al.push(['',`You'd finish the year with ${fmtU(end)} of vacation. Add ${extra===.5?'a half day':num(extra)+' more days'} to get down to ${target?'the '+fmtU(target)+' you want to save':'zero'}.`])}
+ else al.push(['good',target?`On track: you'll use your vacation and save ${fmtU(end)} for next year.`:`On track: you'll use all your vacation this year.`]);
+ const fl=floatAvail-flt;if(fl<-1e-9)al.push(['',`You've planned ${fmtU(-fl)} more personal or float time than you have.`]);else if(fl>=h/2-1e-9)al.push(['',`${fmtU(fl)} of personal or float time isn't planned yet. It's usually lost if you don't use it.`]);
+ $('alerts').innerHTML=al.map(([c,t])=>`<div class="alert ${c}">${t}</div>`).join('');
+ renderBreaks(bs,h,S);saveV()}
+function renderBreaks(bs,h,S){
+ $('breakRows').innerHTML=bs.length?bs.map((b,i)=>{const when=b.days===1?fmt(b.a):`${fmt(b.a)} to ${fmt(b.b)}`;
+  const uses=[b.vac?`<span class="vac">${num(b.vac/h)} vacation</span>`:'',b.flt?`<span class="flt">${num(b.flt/h)} personal</span>`:''].filter(Boolean).join('<br>');
+  return`<tr><td>${when}</td><td><b>${b.days}</b></td><td>${uses}</td><td class="hide-sm">${breakWhy(b,h)}</td><td><button class="btn small danger" data-br="${i}" aria-label="Remove this break">×</button></td></tr>`}).join('')
+  :'<tr><td colspan="5" class="hint">Nothing planned yet. Build a plan or tap days on the calendar.</td></tr>';
+ $$('[data-br]').forEach(x=>x.onclick=()=>{const b=bs[+x.dataset.br],before=JSON.stringify(S);b.keys.forEach(k=>delete S[k]);saveV();render();toast('Break removed.',()=>{vState.selected=JSON.parse(before);saveV();render()})})}
+
+function exportCSV(){const{y,h}=V(),bs=breaks(y),rows=['Date,Day,Type,Hours,Break'];
+ for(const b of bs)for(const k of b.keys){const s=vState.selected[k];rows.push(`${k},${fmt(parse(k),{weekday:'short'})},${s.t==='float'?'personal/float':'vacation'}${s.f<1?' (half)':''},${s.f*h},"${breakWhy(b,h).replace(/"/g,"'")}"`)}
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download=`time-off-plan-${y}.csv`;a.click();
+ try{navigator.clipboard.writeText(rows.join('\n')).then(()=>toast('CSV downloaded and copied. Paste it into Excel if no file appeared.'),()=>{})}catch(e){}}
+
+/* ============ COVERAGE ============ */
+const Benefits=(function(){
+const services=[
+{id:'massage',name:'Massage therapy',one:'massage',plural:'massages',cost:130,typical:10,pace:1,section:'Aches, pain and injuries',category:'Paramedical',use:'For a stiff neck and shoulders from a desk, a steering wheel, or heavy lifting.',get:'A registered massage therapist works out knots and tension.',joke:'Your massage therapist would love you, but',most:'Most people book about once a week at most.'},
+{id:'chiro',name:'Chiropractor',one:'chiropractor visit',plural:'chiropractor visits',cost:80,typical:12,pace:1,section:'Aches, pain and injuries',category:'Paramedical',use:'For lower back aches after lifting, bending, or long shifts on your feet.',get:'Adjustments to your spine and joints to ease stiffness. X-rays usually come out of the same amount.',joke:"That's a lot of adjusting:",most:'Most people go about once a week at most.'},
+{id:'physio',name:'Physiotherapy',one:'physio session',plural:'physio sessions',cost:140,typical:8,pace:2,section:'Aches, pain and injuries',category:'Paramedical',use:'For an injury that never fully healed, or a joint that keeps acting up.',get:'Exercises and hands-on treatment to rebuild strength after an injury, surgery, or repetitive strain.',joke:'Even pro athletes would be impressed:',most:'Twice a week is already a busy rehab schedule.'},
+{id:'osteo',name:'Osteopath',one:'osteopath visit',plural:'osteopath visits',cost:130,typical:6,pace:1,section:'Aches, pain and injuries',category:'Paramedical',use:'For aches that keep coming back, when you want a gentler hands-on approach.',get:'Gentle hands-on treatment for muscles and joints. Confirm your plan accepts your practitioner first.',joke:'Your joints might want a day off:',most:'Most people go about once a week at most.'},
+{id:'acu',name:'Acupuncture',one:'acupuncture session',plural:'acupuncture sessions',cost:100,typical:8,pace:1,section:'Aches, pain and injuries',category:'Paramedical',use:"For tension headaches, or pain that massage hasn't fixed.",get:'Very fine needles placed to ease pain and muscle tension.',joke:"That's a lot of needles:",most:'Once a week is about the most people book.'},
+{id:'foot',name:'Podiatrist or chiropodist',one:'foot specialist visit',plural:'foot specialist visits',cost:75,typical:3,pace:.25,section:'Aches, pain and injuries',category:'Paramedical',use:'For sore feet by quitting time, or sharp heel pain getting out of bed.',get:'A foot specialist for heel and arch pain, ingrown nails, and how you walk. Also who prescribes orthotics.',joke:'Your feet are popular:',most:'Most people see a foot specialist about once a month at most.'},
+{id:'counselling',name:'Counselling',one:'counselling session',plural:'counselling sessions',cost:180,typical:12,pace:1,section:'Stress and mental health',category:'Mental health',use:'For burnout, stress, grief, or when you need someone to talk things through with.',get:'Confidential sessions with a psychologist, psychotherapist, or social worker.',joke:'',most:'Weekly is usually the most people book.'},
+{id:'naturopath',name:'Naturopath',one:'naturopath visit',plural:'naturopath visits',cost:140,typical:4,pace:.5,section:'Everyday health',category:'Paramedical',use:'For feeling tired all the time without knowing why.',get:'Looks at your food, sleep, stress, and habits together, then builds a plan.',joke:"That's a lot of check-ins:",most:'Every couple of weeks is plenty for most people.'},
+{id:'speech',name:'Speech therapy',one:'speech therapy session',plural:'speech therapy sessions',cost:160,typical:10,pace:2,section:'Everyday health',category:'Paramedical',use:"For a child who's behind on talking, or speech that changed after an illness or injury.",get:'Help with talking, understanding, stuttering, and swallowing, for kids and adults.',joke:'',most:'Twice a week is usually the most.'},
+{id:'ot',name:'Occupational therapy',one:'OT session',plural:'OT sessions',cost:130,typical:6,pace:1,section:'Everyday health',category:'Paramedical',use:'For when everyday tasks got harder after an injury, surgery, or a diagnosis.',get:'Practical help getting back to dressing, cooking, driving, work, or school.',joke:'',most:'Once a week is usually the most.'},
+{id:'audio',name:'Audiologist',one:'hearing test',plural:'hearing tests',cost:125,typical:1,pace:0,section:'Everyday health',category:'Paramedical',use:'For asking people to repeat themselves, or a ringing in your ears.',get:'A full hearing test and advice on what to do next.',joke:'',most:'Most people only need one hearing test a year.'},
+{id:'diet',name:'Registered dietitian',one:'dietitian visit',plural:'dietitian visits',cost:110,typical:4,pace:.5,section:'Everyday health',category:'Paramedical, if listed',use:'For a real food plan instead of guesswork.',get:'An eating plan built around your goals. Not every plan covers dietitians.',joke:"That's a lot of meal plans:",most:'Every couple of weeks is plenty for most people.'}];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function planYear(now,reset){const sy=now.getMonth()>=reset?now.getFullYear():now.getFullYear()-1;return{sy,start:new Date(sy,reset,1),end:new Date(sy+1,reset,0)}}
+function period(now=new Date(),choice='auto',reset=0){now=new Date(now.getFullYear(),now.getMonth(),now.getDate());const{sy,end}=planYear(now,reset),weeksLeft=Math.max(0,Math.round((end-now)/604800000));
+ const months=(y,m,n)=>Array.from({length:n},(_,i)=>{const d=new Date(y,m+i,1);return{y:d.getFullYear(),m:d.getMonth()}});
+ if(choice==='next'||(choice==='auto'&&weeksLeft<2))return{kind:'next',weeks:52,weeksLeft,end:new Date(sy+2,reset,0),thisEnd:end,months:months(sy+1,reset,12),auto:choice==='auto'};
+ let from=new Date(now.getFullYear(),now.getMonth()+(now.getDate()>20?1:0),1),n=(end.getFullYear()-from.getFullYear())*12+end.getMonth()-from.getMonth()+1;if(n<1){from=new Date(end.getFullYear(),end.getMonth(),1);n=1}
+ return{kind:'rest',weeks:Math.max(1,weeksLeft),weeksLeft,end,thisEnd:end,months:months(from.getFullYear(),from.getMonth(),n)}}
+const limit=(s,weeks)=>s.id==='audio'?1:Math.max(1,Math.floor(s.pace*weeks));
+const money=x=>'$'+Math.round(x).toLocaleString('en-CA');
+function often(v,w){if(v===0)return'none planned';if(v===1)return'once';const r=v/w;if(r>=1.75)return`about ${Math.round(r)} times a week`;if(r>1.1)return'more than once a week';if(r>=.85)return'about once a week';const gap=1/r;if(gap<1.5)return`about every ${Math.round(gap*7)} days`;if(gap<=9)return`about every ${Math.round(gap)} weeks`;return`about every ${Math.round(gap/4.33)} months`}
+function spread(v,L){const a=Array(L).fill(0);for(let i=0;i<v;i++)a[Math.floor(i*L/v)]++;return a}
+function calculate(input,now=new Date()){const p=period(now,input.period||'auto',+input.reset||0),pct=(+input.percent||0)/100,chosen=services.filter(s=>input.selected.includes(s.id));if(!chosen.length)return null;
+ const price=s=>+((input.prices||{})[s.id])||s.cost,capOf=s=>+((input.caps||{})[s.id])||0,amt=s=>+(input.amounts[s.id]||0),isLocked=s=>Object.prototype.hasOwnProperty.call(input.locks,s.id),pool=+input.shared||0;
+ const shared=input.planType==='separate'?[]:chosen.filter(s=>input.planType==='shared'||!input.own.includes(s.id)),own=chosen.filter(s=>!shared.includes(s)),out={};
+ for(const s of chosen){const c=price(s),pay=capOf(s)?Math.min(c*pct,capOf(s)):c*pct;out[s.id]={service:s,price:c,cap:capOf(s),count:0,limit:limit(s,p.weeks),pay,person:c-pay,locked:isLocked(s)}}
+ let over=false;
+ if(pct>0){let lockedCost=0;for(const s of shared)if(out[s.id].locked){out[s.id].count=Math.max(0,+input.locks[s.id]);lockedCost+=out[s.id].count*out[s.id].pay}
+  let left=pool-lockedCost;if(left<-.005)over=true;else{while(true){const q=shared.filter(s=>!out[s.id].locked&&out[s.id].count<out[s.id].limit&&out[s.id].pay<=left+.0001);if(!q.length)break;q.sort((a,b)=>(out[a.id].count/a.typical-out[b.id].count/b.typical)||(b.typical-a.typical));const s=q[0];out[s.id].count++;left-=out[s.id].pay}}
+  for(const s of own){const r=out[s.id],aff=r.pay?Math.floor(amt(s)/r.pay+1e-9):0,req=r.locked?Math.max(0,+input.locks[s.id]):r.limit;r.count=Math.min(req,aff)}}
+ for(const s of chosen){const r=out[s.id];if(shared.includes(s)){const other=shared.filter(x=>x.id!==s.id&&out[x.id].locked).reduce((n,x)=>n+out[x.id].count*out[x.id].pay,0);r.max=r.pay?Math.max(0,Math.floor((pool-other)/r.pay+1e-9)):0}else r.max=r.pay?Math.floor(amt(s)/r.pay+1e-9):0;
+  r.overPace=r.count>r.limit;r.often=often(r.count,p.weeks);r.plan=r.count*r.pay}
+ const sharedUsed=shared.reduce((n,s)=>n+out[s.id].plan,0),sharedLeft=Math.round((pool-sharedUsed)*100)/100;
+ const ownBudget=own.reduce((n,s)=>n+amt(s),0),ownUsed=own.reduce((n,s)=>n+out[s.id].plan,0),ownLeft=ownBudget-ownUsed;
+ const schedule=p.months.map(o=>({...o,items:[],ids:[],notes:[]}));
+ for(const s of chosen){const v=out[s.id].count;if(!v)continue;spread(v,schedule.length).forEach((n,j)=>{if(n){schedule[j].items.push(`${n} ${n===1?s.one:s.plural}`);schedule[j].ids.push(s.id)}})}
+ addGearSchedule(schedule,input.gear);
+ for(const x of schedule){if(!x.items.length)continue;const m=x.m;
+  if(m===9)x.notes.push('Busy season starts. Book November visits now.');if(m===10)x.notes.push('Busy. Clinics often book up 3 to 4 weeks ahead.');if(m===11)x.notes.push('Busiest month. Clinics fill up before most plans reset.');
+  if(m===0){const a=['physio','chiro','osteo','massage'].filter(id=>x.ids.includes(id)).map(id=>({physio:'physio',chiro:'chiropractors',osteo:'osteopaths',massage:'massage'})[id]);if(a.length)x.notes.push(`Busy for ${joinWords(a)}: winter slips and falls.`);if(x.ids.includes('counselling'))x.notes.push('Busy for counselling: new-year demand.')}
+  if(m===8&&x.ids.includes('counselling'))x.notes.push('Busy for counselling: back-to-school rush.');
+  if(x.y===p.end.getFullYear()&&m===p.end.getMonth()&&m!==11)x.notes.push('Last month before your plan resets.')}
+ const fmtMoney=(used,total,left)=>left<.5?`${money(used)} of ${money(total)} planned. All of it is used.`:`${money(used)} of ${money(total)} planned, ${money(left)} left.`;
+ const status=over?`Over by ${money(-sharedLeft)}. Tap − on something.`:shared.length?fmtMoney(sharedUsed,pool,sharedLeft):ownBudget?fmtMoney(ownUsed,ownBudget,ownLeft):"Enter each service's amount on the left to see your visits.";
+ return{period:p,services:out,shared,own,overBudget:over,sharedLeft,schedule,status,headline:headline(input,shared),help:help(input,shared,out),gear:gearResults(input.gear,p.months[0].y),amt}}
+const joinWords=a=>a.length<2?a[0]||'':a.length===2?a.join(' and '):a.slice(0,-1).join(', ')+', and '+a.at(-1);
+function headline(i,s){const x=money(+i.shared||0);if(!s.length)return'Your visits';if(s.length===1)return i.planType==='mixed'?`Your ${x} shared amount all goes to ${s[0].name.toLowerCase()}`:`All ${x} goes to ${s[0].name.toLowerCase()}`;return i.planType==='mixed'?`Your ${x} shared amount, split`:`Your ${x}, split across ${s.length} services`}
+function help(i,s,o){if(!s.length)return"Tap + or − to set your visits. Each service uses its own amount, so they don't affect each other.";
+ if(s.length===1){const r=o[s[0].id],most=r.pay?Math.floor((+i.shared||0)/r.pay+1e-9):0;return r.limit<most?`That covers up to ${most} visits, but ${r.count} is a realistic pace (${r.often}). Tap + if you want more.`:`That covers up to ${most} visit${most===1?'':'s'}. Tap − if you want fewer.`}
+ let t='Tap + or − on any service. Adding a visit to one takes from the others, so you always stay within your amount.';if(i.planType==='mixed'&&i.own.length)t+=" Services with their own amount (yellow edge) don't take from the shared one.";return t}
+const glassesDue=(g,year)=>g.lastYear===''||g.lastYear==null||+g.lastYear+(+g.renewal||2)<=year;
+function addGearSchedule(sc,g){if(!sc.length)return;const a=sc[0].items;if(g.glasses&&glassesDue(g,sc[0].y))a.push('glasses or contacts');if(g.orthotics)a.push('custom orthotics or shoes (get the prescription and a quote first, they take a few weeks)')}
+function gearResults(g,year){const r=[];
+ if(g.glasses){const y=g.lastYear===''||g.lastYear==null?null:+g.lastYear+(+g.renewal||2),line=y===null?'Probably available now':y<=year?'Available now':`Available again in ${y}`;
+  r.push({name:'Glasses and contacts',line,detail:`Plan pays ${g.glassPct||100}% of the price, up to ${money(+g.glassMax||300)} every ${g.renewal||2} year${(+g.renewal||2)>1?'s':''}.`,use:'For squinting at screens, road signs, or menus.',get:'Prescription glasses, contacts, or prescription sunglasses. Eye exams are usually a separate benefit.',category:'Vision'})}
+ if(g.orthotics){const pct=(+g.orthoPct||80)/100,amt=+g.feetAmount||500;
+  r.push({name:'Custom orthotics and orthopaedic shoes',line:`${money(amt)} amount, ${Math.round(pct*100)}% covered`,detail:`On a typical $500 pair you'd get about ${money(Math.min(amt,500*pct))} back. Prices vary a lot, so get a quote.`,use:'For feet, knees, or a back that ache from standing on concrete all day, or when regular shoes hurt even with inserts.',get:'Custom-moulded inserts or custom shoes. Needs a prescription, which a podiatrist or chiropodist can write.',category:'Medical supplies'})}
+ return r}
+return{services,period,planYear,calculate,money,MONTHS,joinWords};})();
+
+let bState={selected:[],planType:'shared',shared:0,percent:80,period:'auto',reset:0,own:['counselling'],amounts:{},prices:{},caps:{},locks:{},gear:{glasses:false,orthotics:false,glassMax:300,renewal:2,glassPct:100,lastYear:'',orthoPct:80,feetAmount:500,dental:false,dentalEvery:6,dentalLast:'',dentalMax:0,dentalPct:80,dentalCost:275}};
+const saveB=()=>store.set('useYourDaysBenefits',bState);
+const ucfirst=s=>s[0].toUpperCase()+s.slice(1);
+function initBenefits(){const x=store.get('useYourDaysBenefits');if(x){bState={...bState,...x,gear:{...bState.gear,...x.gear}};if(x.gear&&x.gear.shoes)bState.gear.orthotics=true}
+ const py=Benefits.planYear(new Date(),+bState.reset||0).sy,old=bState.savedPlanYear??bState.savedYear;
+ if(old!=null&&old<py){bState.locks={};$('newYearFlag').classList.remove('hidden')}bState.savedPlanYear=py;delete bState.savedYear;
+ $('bReset').innerHTML=Benefits.MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+ $('servicePicker').innerHTML=Benefits.services.map(s=>`<label class="check"><input type="checkbox" data-service="${s.id}" ${bState.selected.includes(s.id)?'checked':''}><span>${s.name}</span></label>`).join('');
+ $('gearPicker').innerHTML=`<p class="lbl" style="margin-top:16px">Dental</p><label class="check"><input type="checkbox" data-gear="dental" ${bState.gear.dental?'checked':''}><span>Check-ups and cleanings</span></label><p class="lbl" style="margin-top:16px">Things you buy</p><label class="check"><input type="checkbox" data-gear="glasses" ${bState.gear.glasses?'checked':''}><span>Glasses and contacts</span></label><label class="check"><input type="checkbox" data-gear="orthotics" ${bState.gear.orthotics?'checked':''}><span>Custom orthotics or orthopaedic shoes</span></label>`;
+ $('bPlanType').value=bState.planType;$('bShared').value=bState.shared||'';$('bPercent').value=bState.percent;$('bPeriod').value=bState.period;$('bReset').value=bState.reset;
+ $$('input[data-service]').forEach(x=>x.onchange=()=>{const id=x.dataset.service;bState.selected=x.checked?[...new Set([...bState.selected,id])]:bState.selected.filter(i=>i!==id);renderBenefits()});
+ $$('input[data-gear]').forEach(x=>x.onchange=()=>{bState.gear[x.dataset.gear]=x.checked;renderBenefits()});
+ $('bPlanType').onchange=()=>{bState.planType=$('bPlanType').value;if(Object.keys(bState.locks).length){bState.locks={};toast('Changing how your amounts work reset the visit counts you set by hand.')}renderBenefits()};
+ $('bShared').onchange=()=>{bState.shared=+$('bShared').value;renderBenefits()};
+ $('bPercent').onchange=()=>{bState.percent=+$('bPercent').value;renderBenefits()};
+ $('bPeriod').onchange=()=>{bState.period=$('bPeriod').value;renderBenefits()};
+ $('bReset').onchange=()=>{bState.reset=+$('bReset').value;bState.savedPlanYear=Benefits.planYear(new Date(),bState.reset).sy;renderBenefits()};
+ renderBenefits()}
+function monthName(o,showYear){return Benefits.MONTHS[o.m]+(showYear?' '+o.y:'')}
+function renderBenefits(){saveB();const chosen=Benefits.services.filter(s=>bState.selected.includes(s.id)),money=Benefits.money;
+ $('bEmpty').classList.toggle('hidden',chosen.length>0||bState.gear.glasses||bState.gear.orthotics||bState.gear.dental);$('bResults').classList.toggle('hidden',!chosen.length);$('sharedWrap').classList.toggle('hidden',bState.planType==='separate');
+ renderOwn(chosen);renderGearInputs();
+ const p=Benefits.period(new Date(),bState.period,+bState.reset),endTxt=d=>d.toLocaleDateString('en-CA',{month:'long',day:'numeric',year:'numeric'}),pf=$('periodFlag');
+ if(p.kind==='next'&&p.auto){pf.textContent=`Your plan year ends ${endTxt(p.thisEnd)}, so this plans next year. To fit visits in before then, set "Plan for" to "Rest of this plan year".`;pf.classList.remove('hidden')}
+ else if(p.kind==='rest'&&p.weeksLeft<=8){pf.textContent=`Only ${p.weeksLeft} week${p.weeksLeft===1?'':'s'} left before your plan resets on ${endTxt(p.end)}. Book soon, because clinics fill up.`;pf.classList.remove('hidden')}
+ else pf.classList.add('hidden');
+ const r=Benefits.calculate(bState);
+ $('gearResults').innerHTML=(r?r.gear:Benefits.calculate({...bState,selected:['audio']}).gear).map(g=>`<div class="card"><span class="tagline">${g.category}</span><h3 style="margin-top:6px">${g.name}</h3><p class="service-copy">${g.use} ${g.get}</p><p class="status">${g.line}</p><p style="margin:0">${g.detail}</p></div>`).join('');
+ const dv=dentalVisits(p);renderDental(p,dv);renderSchedule(p,r,dv);
+ if(!r)return;
+ if(bState.planType!=='separate'&&!(+bState.shared>0)&&r.shared.length){$('bHeadline').textContent='Enter your amount';$('bHelp').textContent='Type the amount your plan covers into "Amount to plan with" on the left. Your insurer\'s app or benefits booklet lists it.';$('bProgress').textContent='Waiting for your amount.';$('bProgress').className='alert'}
+ else{const capped=!r.overBudget&&r.shared.length&&r.sharedLeft>=Math.min(...r.shared.map(s=>r.services[s.id].pay))&&r.shared.every(s=>r.services[s.id].locked||r.services[s.id].count>=r.services[s.id].limit);
+  $('bHeadline').textContent=r.headline;$('bHelp').textContent=r.help+(capped?` The ${money(r.sharedLeft)} left over doesn't fit at a realistic pace in ${r.period.weeks} weeks. Tap + if you can book more often, or tick another service you'd use.`:'');
+  $('bProgress').textContent=r.status;$('bProgress').className='alert '+(r.overBudget?'':'good')}
+ let html='';
+ for(const section of['Aches, pain and injuries','Stress and mental health','Everyday health']){const items=chosen.filter(s=>s.section===section);if(!items.length)continue;html+=`<h3 class="group-title">${section}</h3>`;
+  for(const s of items){const x=r.services[s.id],own=r.own.includes(s),locked=Object.prototype.hasOwnProperty.call(bState.locks,s.id);let warn='';
+   if(x.overPace)warn=`<p class="warning">${s.id==='audio'?s.most:`${s.joke?s.joke+' ':''}${x.count} in ${r.period.weeks===52?'a year':r.period.weeks+' weeks'} is ${x.often}. ${s.most}`} <button class="btn small secondary" onclick="unlockBenefit('${s.id}')">Use a realistic pace</button></p>`;
+   const sum=x.count?`${ucfirst(x.often)}. Plan pays ${money(x.plan)} in total${x.person<.5?', fully covered.':`, you pay ${money(x.person)} a visit.`}`:(bState.percent>0?'None planned.':'Not covered at 0%.');
+   let ownLine='';if(own){const a=r.amt(s),left=a-x.plan;ownLine=`<p class="hint">${!a?"Enter this service's own amount on the left.":`Own amount: ${money(a)}. ${left<.5?'All of it is planned.':x.count>=x.limit&&!locked?`${money(left)} left at a realistic pace. Tap + to book more.`:`${money(left)} not planned yet.`}`}</p>`}
+   html+=`<div class="card service-card ${own?'own':''}"><div class="service-head"><div><span class="tagline">${s.category}</span><h3>${s.name}</h3><div class="service-copy">${s.use} ${s.get}</div><div class="pricerow"><label>Price per visit $<input type="number" min="0" step="5" data-price="${s.id}" value="${x.price}"></label><label>Plan's per-visit limit $<input type="number" min="0" step="5" data-cap="${s.id}" value="${x.cap||''}" placeholder="none"></label></div></div><div class="counter"><button class="btn secondary" aria-label="One fewer ${s.one}" onclick="changeCount('${s.id}',-1)" ${x.count<=0?'disabled':''}>−</button><b aria-live="polite">${x.count}</b><button class="btn secondary" aria-label="One more ${s.one}" onclick="changeCount('${s.id}',1)" ${x.count>=x.max?'disabled':''}>+</button></div></div><p class="status">${sum}</p>${locked?`<p class="hint">You set this. <button class="btn small secondary" onclick="unlockBenefit('${s.id}')">Undo</button></p>`:''}${ownLine}${warn}</div>`}}
+ $('serviceResults').innerHTML=html;
+ $$('[data-price]').forEach(x=>x.onchange=()=>{const v=+x.value,id=x.dataset.price,def=Benefits.services.find(s=>s.id===id).cost;if(v>0&&v!==def)bState.prices[id]=v;else delete bState.prices[id];renderBenefits()});
+ $$('[data-cap]').forEach(x=>x.onchange=()=>{const v=+x.value,id=x.dataset.cap;if(v>0)bState.caps[id]=v;else delete bState.caps[id];renderBenefits()});
+}
+function dentalVisits(p){const g=bState.gear;if(!g.dental)return null;const every=+g.dentalEvery||6,t=new Date(),today=new Date(t.getFullYear(),t.getMonth(),t.getDate());
+ const addM=(d,n)=>new Date(d.getFullYear(),d.getMonth()+n,d.getDate()+1); // rolling period: covered again the day after it ends
+ const last=g.dentalLast?new Date(g.dentalLast+'T00:00:00'):null,next=last?addM(last,every):today;
+ const start=p.kind==='next'?new Date(p.months[0].y,p.months[0].m,1):today;let d=next<start?start:next;const visits=[];
+ while(d<=p.end&&visits.length<6){visits.push(d);d=addM(d,every)}
+ return{every,last,next,eligibleNow:next<=today,visits}}
+function renderDental(p,dv){const el=$('dentalResults');if(!dv){el.innerHTML='';return}
+ const g=bState.gear,money=Benefits.money,cost=+g.dentalCost||275,pct=+g.dentalPct||80,pay=cost*pct/100,n=dv.visits.length,max=+g.dentalMax||0,long=x=>x.toLocaleDateString('en-CA',{month:'long',day:'numeric',year:'numeric'}),short=x=>x.toLocaleDateString('en-CA',{month:'long',day:'numeric'});
+ const next=!dv.last?`Book now if your last check-up was more than ${dv.every} months ago. Add the date on the left to see exactly when you're covered.`:dv.eligibleNow?"You're covered for a check-up now.":`Your next check-up is covered on or after ${long(dv.next)}.`;
+ const fit=n?`${n} check-up${n>1?'s':''} fit${n>1?'':'s'} before your plan resets on ${long(p.end)}. Earliest dates: ${Benefits.joinWords(dv.visits.map(short))}.`:`No check-up fits before your plan resets on ${long(p.end)}. Your next one falls in the new plan year.`;
+ const costLine=`Each costs about ${money(cost)}. Your plan pays about ${money(pay)}${pct<100?` and you pay ${money(cost-pay)}`:''}.`;
+ const maxLine=max?(n*pay>max?`Check-ups alone would use all of your ${money(max)} dental amount.`:`Check-ups use about ${money(n*pay)} of your ${money(max)} dental amount, leaving about ${money(max-n*pay)} for fillings or other work.`):'';
+ el.innerHTML=`<div class="card service-card"><span class="tagline">Dental</span><h3>Check-ups and cleanings</h3><p class="service-copy">An exam, a cleaning (scaling) and a polish. X-rays are usually added every year or two. Each person on your plan has their own schedule.</p><p class="status">${next}</p><p>${fit}</p><p style="margin-bottom:0">${costLine}${maxLine?' '+maxLine:''}</p></div>`}
+function renderSchedule(p,r,dv){const rows=r?r.schedule.map(x=>({...x,items:[...x.items],notes:[...x.notes]})):p.months.map(o=>({...o,items:[],notes:[]}));
+ if(dv&&rows.length)for(const v of dv.visits){let i=rows.findIndex(x=>x.y===v.getFullYear()&&x.m===v.getMonth());if(i<0&&v<new Date(rows[0].y,rows[0].m,1))i=0;if(i>=0)rows[i].items.push('dental check-up')}
+ for(const x of rows)if(x.items.length&&!x.notes.length&&x.m>=9)x.notes.push(x.m===9?'Busy season starts. Book November visits now.':'Busy. Book 3 to 4 weeks ahead.');
+ const any=rows.some(x=>x.items.length);$('scheduleCard').classList.toggle('hidden',!any);if(!any){$('scheduleRows').innerHTML='';return}
+ const crossYear=rows.some(x=>x.y!==rows[0].y),busy=rows.some(x=>x.m>=9&&x.items.length);
+ $('scheduleIntro').textContent=busy?'October to December is the busiest time of year, because most plans reset in January and everyone rushes in. Book those months 3 to 4 weeks ahead.':'Busy months are flagged. Book those 3 to 4 weeks ahead.';
+ $('scheduleRows').innerHTML=rows.filter(x=>x.items.length).map(x=>`<tr><td>${monthName(x,crossYear)}</td><td>${x.items.join('<br>')}</td><td class="schedule-note">${x.notes.join('<br>')}</td></tr>`).join('')}
+function renderOwn(chosen){if(bState.planType==='shared'||!chosen.length){$('ownAmounts').innerHTML='';return}
+ let html='<div class="step">Amounts by service</div>';
+ for(const s of chosen){const ownIt=bState.planType==='separate'||bState.own.includes(s.id),v=bState.amounts[s.id]||'';
+  html+=`<div class="field">${bState.planType==='mixed'?`<label class="check"><input type="checkbox" data-own="${s.id}" ${ownIt?'checked':''}><span>${s.name} has its own amount</span></label>`:`<label for="amt-${s.id}">${s.name} ($)</label>`}${ownIt?`<input id="amt-${s.id}" data-amount="${s.id}" type="number" min="0" step="50" placeholder="e.g. 500" value="${v}">`:''}</div>`}
+ $('ownAmounts').innerHTML=html;
+ $$('[data-own]').forEach(x=>x.onchange=()=>{const id=x.dataset.own;bState.own=x.checked?[...new Set([...bState.own,id])]:bState.own.filter(i=>i!==id);delete bState.locks[id];renderBenefits()});
+ $$('[data-amount]').forEach(x=>x.onchange=()=>{bState.amounts[x.dataset.amount]=+x.value;renderBenefits()})}
+function renderGearInputs(){const g=bState.gear;let h='';
+ if(g.dental)h+=`<div class="step">Dental</div><div class="row"><div class="field"><label>Check-ups covered every</label><select data-g="dentalEvery">${[6,9,12].map(n=>`<option value="${n}" ${g.dentalEvery==n?'selected':''}>${n} months</option>`).join('')}</select></div><div class="field"><label>Last check-up</label><input data-g="dentalLast" type="date" value="${g.dentalLast}"></div></div><p class="hint">Many adult plans now cover every 9 months, not 6. Kids are often every 6. Your booklet lists it as "recall exam".</p><div class="row"><div class="field"><label>Dental amount ($)</label><input data-g="dentalMax" type="number" min="0" step="50" placeholder="optional" value="${g.dentalMax||''}"></div><div class="field"><label>% covered for basic care</label><select data-g="dentalPct">${[100,90,80,70,50].map(n=>`<option ${g.dentalPct==n?'selected':''}>${n}</option>`).join('')}</select></div></div><div class="field"><label>Cost of a check-up and cleaning ($)</label><input data-g="dentalCost" type="number" min="0" step="5" value="${g.dentalCost}"><p class="hint">Roughly $250 to $300 in Ontario for an exam, cleaning and polish. Your dentist's office can tell you yours.</p></div>`;
+ if(g.glasses)h+=`<div class="step">Glasses and contacts</div><div class="row"><div class="field"><label>Plan maximum ($)</label><input data-g="glassMax" type="number" value="${g.glassMax}"></div><div class="field"><label>Renews every (years)</label><select data-g="renewal">${[1,2,3].map(n=>`<option ${g.renewal==n?'selected':''}>${n}</option>`).join('')}</select></div></div><div class="row"><div class="field"><label>% covered</label><select data-g="glassPct">${[100,90,80].map(n=>`<option ${g.glassPct==n?'selected':''}>${n}</option>`).join('')}</select></div><div class="field"><label>Year last bought</label><input data-g="lastYear" type="number" placeholder="optional" value="${g.lastYear}"></div></div>`;
+ if(g.orthotics)h+=`<div class="step">Orthotics and orthopaedic shoes</div><p class="hint">These usually share one amount.</p><div class="row"><div class="field"><label>Amount ($)</label><input data-g="feetAmount" type="number" min="0" step="50" value="${g.feetAmount}"></div><div class="field"><label>% covered</label><select data-g="orthoPct">${[100,90,85,80].map(n=>`<option ${g.orthoPct==n?'selected':''}>${n}</option>`).join('')}</select></div></div>`;
+ $('gearInputs').innerHTML=h;$$('[data-g]').forEach(x=>x.onchange=()=>{bState.gear[x.dataset.g]=['lastYear','dentalLast'].includes(x.dataset.g)?x.value:+x.value;renderBenefits()})}
+function changeCount(id,d){const r=Benefits.calculate(bState),x=r.services[id];bState.locks[id]=Math.max(0,Math.min(x.max,x.count+d));renderBenefits()}
+function unlockBenefit(id){delete bState.locks[id];renderBenefits()}
+
+/* ---------- navigation + wiring ---------- */
+function show(v){$('toast').classList.add('hidden');$('home').classList.toggle('hidden',v!=='home');$$('.view').forEach(x=>x.classList.toggle('active',x.id===v));$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));store.set('useYourDaysTab',v);window.scrollTo(0,0)}
+$$('.tab').forEach(t=>t.onclick=()=>show(t.dataset.view));
+$$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+$('homeLink').onclick=e=>{e.preventDefault();show('home')};
+$$('[data-mode]').forEach(b=>b.onclick=()=>{vState.mode=b.dataset.mode;$$('[data-mode]').forEach(x=>x.classList.toggle('on',x===b))});
+$$('[data-unit]').forEach(b=>b.onclick=()=>{setUnit(b.dataset.unit,true);render()});
+$('province').innerHTML=Object.entries(PROVINCES).map(([k,v])=>`<option value="${k}">${v[0]}</option>`).join('');
+loadV();
+$('province').value=vState.province;
+$('province').onchange=()=>{vState.province=$('province').value;vState.holidays={};dropHolidayDays();renderHolidayPicker();render()};
+if(!$('year').value){const n=new Date();$('year').value=n.getMonth()>=10?n.getFullYear()+1:n.getFullYear()}
+$('bridges').checked=vState.bridges!==false;$('bridges').onchange=()=>{vState.bridges=$('bridges').checked;saveV()};
+INPUTS.forEach(id=>$(id).addEventListener('change',()=>{if(id==='year'||id==='fullWeeks'){renderWeekInputs();renderHolidayPicker()}render()}));
+$('buildBtn').onclick=buildPlan;$('csvBtn').onclick=exportCSV;
+$('clearBtn').onclick=()=>{const y=V().y,before=JSON.stringify(vState.selected);for(const k of Object.keys(vState.selected))if(k.startsWith(y+'-'))delete vState.selected[k];saveV();render();toast(`Cleared ${y}.`,()=>{vState.selected=JSON.parse(before);saveV();render()})};
+let resetArmed=false,resetTimer;
+$('resetAll').onclick=()=>{const b=$('resetAll');if(!resetArmed){resetArmed=true;b.textContent='Tap again to erase everything';b.classList.add('armed');clearTimeout(resetTimer);resetTimer=setTimeout(()=>{resetArmed=false;b.textContent='Start over';b.classList.remove('armed')},4000);return}
+ ['useYourDaysPlan','useYourDaysInputs','useYourDaysBenefits','useYourDaysTab'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()};
+renderWeekInputs();renderHolidayPicker();render();initBenefits();
+show(store.get('useYourDaysTab')||'home');
+</script></body></html>
