@@ -167,6 +167,12 @@ footer p{margin:0 0 8px;max-width:78ch}
 .summary{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px}
 .summary p{margin:0}
 .summary .stack{flex:0 0 auto}
+.hl{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 22px;background:var(--ink);color:#fff;border-radius:22px;padding:26px 28px;margin-bottom:14px}
+.hl .n{font-family:var(--display);font-weight:800;letter-spacing:-.04em;line-height:.9;font-size:clamp(56px,9vw,96px)}
+.hl .n.gold{color:var(--gold)}
+.hl .lbl2{display:block;font-size:17px;font-weight:600;color:#C9D3DB;margin-top:6px}
+.hl .eq{font-family:var(--display);font-size:clamp(22px,3vw,30px);font-weight:700;color:#C9D3DB;padding-bottom:30px}
+.hl p{flex-basis:100%;margin:6px 0 0;color:#C9D3DB;font-size:16px}
 #resV.daily .up-only,#resV:not(.daily) .dy-only{display:none}
 .settings{margin-top:20px}
 .settings>summary{font-family:var(--display);font-size:20px;font-weight:700}
@@ -176,9 +182,9 @@ footer p{margin:0 0 8px;max-width:78ch}
 #toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;box-shadow:0 6px 24px #0004;z-index:9;width:max-content;max-width:min(92vw,560px)}
 #toast button{background:none;border:0;color:var(--gold);font-weight:800;cursor:pointer;padding:4px}
 @media(max-width:1000px){.grid{grid-template-columns:1fr}.calendar{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr;gap:36px;padding:40px 0 48px}}
-@media(max-width:640px){.opts.grid2{grid-template-columns:1fr}.opts.grid4{grid-template-columns:repeat(3,1fr)}.wizard{padding:20px;border-radius:18px}.summary{flex-direction:column;align-items:flex-start}.wnav .btn{flex:1;min-width:0}.toolbar .seg{min-width:0;width:100%}body{font-size:18px}.bar{flex-wrap:wrap;gap:6px 10px;padding-top:8px}.tabs{order:3;width:100%;margin:0 0 10px}.tab{flex:1}.linkbtn{margin-left:auto}.cta .btn{width:100%}.calendar{grid-template-columns:1fr}.day{min-height:46px;font-size:17px}.gear-grid{grid-template-columns:1fr}.hide-sm{display:none}th,td{padding:9px 4px}.service-head{flex-direction:column}.tile b{font-size:28px}}
+@media(max-width:640px){.hl{padding:20px}.hl .eq{padding-bottom:22px}.opts.grid2{grid-template-columns:1fr}.opts.grid4{grid-template-columns:repeat(3,1fr)}.wizard{padding:20px;border-radius:18px}.summary{flex-direction:column;align-items:flex-start}.wnav .btn{flex:1;min-width:0}.toolbar .seg{min-width:0;width:100%}body{font-size:18px}.bar{flex-wrap:wrap;gap:6px 10px;padding-top:8px}.tabs{order:3;width:100%;margin:0 0 10px}.tab{flex:1}.linkbtn{margin-left:auto}.cta .btn{width:100%}.calendar{grid-template-columns:1fr}.day{min-height:46px;font-size:17px}.gear-grid{grid-template-columns:1fr}.hide-sm{display:none}th,td{padding:9px 4px}.service-head{flex-direction:column}.tile b{font-size:28px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
-@media print{.topbar,#home,.controls,.btn,#toast,.seg,footer,.wizard{display:none!important}.view{display:none}.view.active{display:block}.grid{display:block}.calendar{grid-template-columns:repeat(3,1fr)}body{background:#fff;font-size:13px}.month{break-inside:avoid}.day{min-height:24px;font-size:11px}}
+@media print{.topbar,#home,.controls,.btn,#toast,.seg,footer,.wizard{display:none!important}.hl{background:#fff;color:#000;border:2px solid #000}.hl .n.gold{color:#000}.view{display:none}.view.active{display:block}.grid{display:block}.calendar{grid-template-columns:repeat(3,1fr)}body{background:#fff;font-size:13px}.month{break-inside:avoid}.day{min-height:24px;font-size:11px}}
 </style></head><body>
 <header class="topbar"><div class="wrap bar">
   <a href="#" class="brand" id="homeLink"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#16212B"/><circle cx="16" cy="19" r="7" fill="#F6BE1E"/><rect x="5" y="19" width="22" height="9" fill="#16212B"/><path d="M7 19.5h18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>Use Your Benefits</a>
@@ -211,7 +217,8 @@ footer p{margin:0 0 8px;max-width:78ch}
 <div id="wizV" class="wizard hidden"></div>
 <div id="resV" class="hidden">
   <div class="viewhead"><h2>Your time-off plan</h2></div>
-  <div class="summary card"><p id="sumV"></p><div class="stack"><button class="btn secondary small" id="redoV">Change answers</button><button class="btn secondary small" id="csvBtn">Export CSV</button><button class="btn secondary small" onclick="window.print()">Print</button></div></div>
+  <div id="hlV" class="hl hidden"></div>
+  <div class="summary card"><p id="sumV"></p><div class="stack"><button class="btn secondary small" id="redoV">Change answers</button><button class="btn small" id="icsBtnV">Add to calendar</button><button class="btn secondary small" id="csvBtn">Export CSV</button><button class="btn secondary small" onclick="window.print()">Print</button></div></div>
   <div class="metrics">
     <div class="metric"><span id="mEndLbl">Left at year-end</span><b id="mEnd">0</b><small id="mEndSub"></small></div>
     <div class="metric"><span>Vacation planned</span><b id="mVac">0</b><small id="mVacSub"></small></div>
@@ -261,7 +268,7 @@ footer p{margin:0 0 8px;max-width:78ch}
 <div id="wizB" class="wizard hidden"></div>
 <div id="resB" class="hidden narrow">
   <div class="viewhead"><h2>Your coverage plan</h2></div>
-  <div class="summary card"><p id="sumB"></p><div class="stack"><button class="btn secondary small" id="redoB">Change answers</button><button class="btn secondary small" id="csvBtnB">Export CSV</button><button class="btn secondary small" onclick="window.print()">Print</button></div></div>
+  <div class="summary card"><p id="sumB"></p><div class="stack"><button class="btn secondary small" id="redoB">Change answers</button><button class="btn small" id="icsBtnB">Add to calendar</button><button class="btn secondary small" id="csvBtnB">Export CSV</button><button class="btn secondary small" onclick="window.print()">Print</button></div></div>
   <div id="newYearFlag" class="alert hidden">It's a new plan year, so your amounts have probably reset. Check your insurer's app and update them in All settings.</div>
   <div id="periodFlag" class="alert hidden"></div>
   <div id="bEmpty" class="card"><h2>Nothing picked yet</h2><p style="margin:0">Tap Change answers and pick what you'd use.</p></div>
@@ -485,6 +492,8 @@ function render(){const{y,h,start,annual,target}=V(),floatAvail=floatUsable(y),h
  $('mVac').textContent=num(vac/h)+(vac===h?' day':' days');$('mVacSub').textContent=daily()?`of ${fmtU(avail)} you'll have`:`of ${fmtU(avail)} you have`;
  $('resV').classList.toggle('daily',daily());$('mEndLbl').textContent=daily()?`Left on ${fmt(win().e,{month:'short',day:'numeric',year:'numeric'})}`:'Left at year-end';$('winNote').textContent=daily()?`Planning the next 12 months: ${winLabel()}.`:'';$('balAsOf').textContent=vState.balDate?`As of ${fmt(parse(vState.balDate),{month:'long',day:'numeric',year:'numeric'})}.`:'';
  $('mFlt').textContent=floatAvail?fmtU(flt):'—';$('mFltSub').textContent=floatAvail?`of ${fmtU(floatAvail)} you have`:'None entered';
+ {const used=(vac+flt)/h,off=bs.reduce((n,b)=>n+b.days,0),hl=$('hlV');hl.classList.toggle('hidden',!bs.length);
+  if(bs.length)hl.innerHTML=`<div><span class="n">${num(used)}</span><span class="lbl2">${flt?'vacation and personal days':'vacation days'} used</span></div><span class="eq">become</span><div><span class="n gold">${off}</span><span class="lbl2">days off</span></div><p>Across ${bs.length} break${bs.length>1?'s':''}, counting the weekends and holidays next to them.</p>`}
  $('mLong').textContent=longest?longest.days+' days':'—';$('mLongSub').textContent=longest?fmt(longest.a,{month:'short',day:'numeric'})+' to '+fmt(longest.b,{month:'short',day:'numeric'}):'';
  const wk=+$('fullWeeks').value,strat=STYLES[$('strategy').value]||STYLES.fridays;
  $('sumV').textContent=`${prov()[0]}, ${daily()?'next 12 months':y}. ${daily()?`${fmtU(start)} in your bank, earning ${fmtU(annual)} a year${capH()<Infinity?`, ${fmtU(capH())} maximum`:''}`:fmtU(avail)+' of vacation'}${floatAvail?(daily()?`. Plus ${fmtU(floatAvail)} of float time over the year`:` and ${fmtU(floatAvail)} of personal time`):''}${target?(daily()?`, keeping ${fmtU(target)} in the bank`:`, saving ${fmtU(target)}`):''}. `+(wk?`${wk} chosen week${wk>1?'s':''} off. `:'')+`Plan: ${strat}${{warm:', mostly May to September',cool:', mostly October to April'}[$('season').value]||''}.`+blackText();
@@ -645,15 +654,31 @@ function renderDental(p,dv){const el=$('dentalResults');if(!dv){el.innerHTML='';
  const costLine=`Each costs about ${money(cost)}. Your plan pays about ${money(pay)}${pct<100?` and you pay ${money(cost-pay)}`:''}.`;
  const maxLine=max?(n*pay>max?`Check-ups alone would use all of your ${money(max)} dental amount.`:`Check-ups use about ${money(n*pay)} of your ${money(max)} dental amount, leaving about ${money(max-n*pay)} for fillings or other work.`):'';
  el.innerHTML=`<div class="card service-card"><span class="tagline">Dental</span><h3>Check-ups and cleanings</h3><p class="service-copy">An exam, a cleaning (scaling) and a polish. X-rays are usually added every year or two. Each person on your plan has their own schedule.</p><p class="status">${next}</p><p>${fit}</p><p style="margin-bottom:0">${costLine}${maxLine?' '+maxLine:''}</p></div>`}
-let lastCoverageRows=[];
+let lastCoverageRows=[],lastCoverageRaw=[],lastDental=null;
+const icsEsc=t=>String(t).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+function icsFold(l){const o=[];while(l.length>73){o.push(l.slice(0,73));l=' '+l.slice(73)}o.push(l);return o.join('\r\n')}
+const icsDate=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+function buildICS(events){const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,''),L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Use Your Benefits//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+ for(const e of events){L.push('BEGIN:VEVENT',`UID:ub-${icsDate(e.start)}-${e.id}@useyourbenefits`,`DTSTAMP:${stamp}`,`DTSTART;VALUE=DATE:${icsDate(e.start)}`,`DTEND;VALUE=DATE:${icsDate(addDays(e.end||e.start,1))}`,`SUMMARY:${icsEsc(e.title)}`,`DESCRIPTION:${icsEsc(e.desc||'')}`,'TRANSP:TRANSPARENT');
+  if(e.alarm)L.push('BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsEsc(e.alarm.text)}`,`TRIGGER:${e.alarm.trigger}`,'END:VALARM');L.push('END:VEVENT')}
+ L.push('END:VCALENDAR');return L.map(icsFold).join('\r\n')+'\r\n'}
+function downloadICS(name,events){if(!events.length){toast('Nothing to add yet.');return}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([buildICS(events)],{type:'text/calendar;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove();toast(`Calendar file with ${events.length} event${events.length>1?'s':''} downloaded. Open it to add ${events.length>1?'them':'it'} to your calendar.`)}
+function icsTimeOff(){const{h}=V(),t=key(todayD()),ev=[];for(const b of breaks(V().y)){if(key(b.b)<t)continue;const uses=[b.vac?`${num(b.vac/h)} vacation day${b.vac===h?'':'s'}`:'',b.flt?`${num(b.flt/h)} personal day${b.flt===h?'':'s'}`:''].filter(Boolean).join(' and ');
+  const title=b.days===1?'Day off':`Time off: ${b.days} days`;ev.push({id:'off-'+key(b.a),start:b.a,end:b.b,title,desc:`${breakWhy(b,h)}. Uses ${uses}. Planned with Use Your Benefits.`,alarm:{trigger:'-P28D',text:`In 4 weeks: ${title}`}})}
+ downloadICS('time-off-plan.ics',ev)}
+function icsCoverage(){const t=todayD(),ev=[];for(const r of lastCoverageRaw){let d=D(r.y,r.m,1);if(d<t)d=t;if(r.y<t.getFullYear()||(r.y===t.getFullYear()&&r.m<t.getMonth()))continue;
+  ev.push({id:`book-${r.y}-${r.m}`,start:d,title:`Book this month: ${r.items.join(', ')}`,desc:(r.notes.length?r.notes.join(' ')+' ':'')+'Planned with Use Your Benefits. Check your plan for what is covered.',alarm:r.m>=9?{trigger:'-P21D',text:`Clinics get busy. Book next month's visits now: ${r.items.join(', ')}`}:{trigger:'PT9H',text:`Book this month: ${r.items.join(', ')}`}})}
+ if(lastDental)for(const v of lastDental.visits)if(v>=t)ev.push({id:'dental-'+key(v),start:v,title:'Dental check-up is covered from today',desc:'Your plan covers your next check-up and cleaning from this date. Planned with Use Your Benefits.',alarm:{trigger:'-P14D',text:'Book your dental check-up. It is covered in 2 weeks.'}});
+ downloadICS('coverage-plan.ics',ev)}
 function downloadCSV(name,text,label){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'}));a.download=name;a.click();try{navigator.clipboard.writeText(text).then(()=>toast(label+' downloaded and copied. Paste it into Excel if no file appeared.'),()=>{})}catch(e){}}
 function exportCoverageCSV(){if(!lastCoverageRows.length){toast('Nothing to export yet.');return}downloadCSV('coverage-plan.csv',['Month,Book,Heads-up',...lastCoverageRows.map(r=>r.map(c=>`"${c.replace(/"/g,"'")}"`).join(','))].join('\n'),'Visit schedule')}
-function renderSchedule(p,r,dv){const rows=r?r.schedule.map(x=>({...x,items:[...x.items],notes:[...x.notes]})):p.months.map(o=>({...o,items:[],notes:[]}));
+function renderSchedule(p,r,dv){lastDental=dv;lastCoverageRaw=[];const rows=r?r.schedule.map(x=>({...x,items:[...x.items],notes:[...x.notes]})):p.months.map(o=>({...o,items:[],notes:[]}));
  if(dv&&rows.length)for(const v of dv.visits){let i=rows.findIndex(x=>x.y===v.getFullYear()&&x.m===v.getMonth());if(i<0&&v<new Date(rows[0].y,rows[0].m,1))i=0;if(i>=0)rows[i].items.push('dental check-up')}
  for(const x of rows)if(x.items.length&&!x.notes.length&&x.m>=9)x.notes.push(x.m===9?'Busy season starts. Book November visits now.':'Busy. Book 3 to 4 weeks ahead.');
- const any=rows.some(x=>x.items.length);$('scheduleCard').classList.toggle('hidden',!any);if(!any){$('scheduleRows').innerHTML='';return}
+ const any=rows.some(x=>x.items.length);$('scheduleCard').classList.toggle('hidden',!any);if(!any){$('scheduleRows').innerHTML='';lastCoverageRows=[];return}
  const crossYear=rows.some(x=>x.y!==rows[0].y),busy=rows.some(x=>x.m>=9&&x.items.length);
  $('scheduleIntro').textContent=busy?'October to December is the busiest time of year, because most plans reset in January and everyone rushes in. Book those months 3 to 4 weeks ahead.':'Busy months are flagged. Book those 3 to 4 weeks ahead.';
+ lastCoverageRaw=rows.filter(x=>x.items.length);lastDental=dv;
  lastCoverageRows=rows.filter(x=>x.items.length).map(x=>[monthName(x,crossYear),x.items.join('; '),x.notes.join('; ')]);
  $('scheduleRows').innerHTML=rows.filter(x=>x.items.length).map(x=>`<tr><td>${monthName(x,crossYear)}</td><td>${x.items.join('<br>')}</td><td class="schedule-note">${x.notes.join('<br>')}</td></tr>`).join('')}
 function renderOwn(chosen){if(bState.planType==='shared'||!chosen.length){$('ownAmounts').innerHTML='';return}
@@ -809,7 +834,7 @@ $('clearBtn').onclick=()=>{const before=JSON.stringify(vState.selected);for(cons
 let resetArmed=false,resetTimer;
 $('resetAll').onclick=()=>{const b=$('resetAll');if(!resetArmed){resetArmed=true;b.textContent='Tap again to erase everything';b.classList.add('armed');clearTimeout(resetTimer);resetTimer=setTimeout(()=>{resetArmed=false;b.textContent='Start over';b.classList.remove('armed')},4000);return}
  ['useYourDaysPlan','useYourDaysInputs','useYourDaysBenefits','useYourDaysTab'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()};
-$('redoV').onclick=()=>openPlanner('V',true);renderBlackPicker();renderFloatMonths();$('redoB').onclick=()=>openPlanner('B',true);$('csvBtnB').onclick=exportCoverageCSV;
+$('redoV').onclick=()=>openPlanner('V',true);renderBlackPicker();renderFloatMonths();$('redoB').onclick=()=>openPlanner('B',true);$('icsBtnV').onclick=icsTimeOff;$('icsBtnB').onclick=icsCoverage;$('csvBtnB').onclick=exportCoverageCSV;
 renderWeekInputs();renderHolidayPicker();renderBlackPicker();renderFloatMonths();render();initBenefits();
 show(store.get('useYourDaysTab')||'home');
 </script></body></html>
