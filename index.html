@@ -681,8 +681,12 @@ function buildICS(events){const stamp=new Date().toISOString().replace(/[-:]/g,'
   if(e.alarm)L.push('BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsEsc(e.alarm.text)}`,`TRIGGER:${e.alarm.trigger}`,'END:VALARM');L.push('END:VEVENT')}
  L.push('END:VCALENDAR');return L.map(icsFold).join('\r\n')+'\r\n'}
 function downloadICS(name,events){if(!events.length){toast('Nothing to add yet.');return}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([buildICS(events)],{type:'text/calendar;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove();toast(`Calendar file with ${events.length} event${events.length>1?'s':''} downloaded. Open it to add ${events.length>1?'them':'it'} to your calendar.`)}
-function icsTimeOff(){const{h}=V(),t=key(todayD()),ev=[];for(const b of breaks(V().y)){if(key(b.b)<t)continue;const uses=[b.vac?`${num(b.vac/h)} vacation day${b.vac===h?'':'s'}`:'',b.flt?`${num(b.flt/h)} personal day${b.flt===h?'':'s'}`:''].filter(Boolean).join(' and ');
-  const title=b.days===1?'Day off':`Time off: ${b.days} days`;ev.push({id:'off-'+key(b.a),start:b.a,end:b.b,title,desc:`${breakWhy(b,h)}. Uses ${uses}. Planned with Use What You Earn.`,alarm:{trigger:'-P28D',text:`In 4 weeks: ${title}`}})}
+function icsTimeOff(){const S=vState.selected,{h}=V(),t=key(todayD()),ev=[];
+ for(const b of breaks(V().y)){if(key(b.b)<t)continue;const why=breakWhy(b,h),runs=[];
+  for(const k of b.keys.filter(k=>k>=t).sort()){const last=runs[runs.length-1];if(last&&key(addDays(parse(last[last.length-1]),1))===k)last.push(k);else runs.push([k])}
+  for(const run of runs){const hrs=run.reduce((n,k)=>n+S[k].f*h,0),days=hrs/h,half=run.length===1&&S[run[0]].f<1,flt=run.every(k=>S[k].t==='float'),kind=flt?'Personal':'Vacation';
+   const title=half?`Half day off (${kind.toLowerCase()})`:run.length===1?`${kind} day`:`${kind}: ${run.length} days`;
+   ev.push({id:'off-'+run[0],start:parse(run[0]),end:parse(run[run.length-1]),title,desc:`Book this off. ${why}. Uses ${num(days)} ${flt?'personal':'vacation'} day${days===1?'':'s'}. Planned with Use What You Earn.`,alarm:{trigger:'-P28D',text:`In 4 weeks: ${title}`}})}}
  downloadICS('time-off-plan.ics',ev)}
 function icsCoverage(){const t=todayD(),ev=[];for(const r of lastCoverageRaw){let d=D(r.y,r.m,1);if(d<t)d=t;if(r.y<t.getFullYear()||(r.y===t.getFullYear()&&r.m<t.getMonth()))continue;
   ev.push({id:`book-${r.y}-${r.m}`,start:d,title:`Book this month: ${r.items.join(', ')}`,desc:(r.notes.length?r.notes.join(' ')+' ':'')+'Planned with Use What You Earn. Check your plan for what is covered.',alarm:r.m>=9?{trigger:'-P21D',text:`Clinics get busy. Book next month's visits now: ${r.items.join(', ')}`}:{trigger:'PT9H',text:`Book this month: ${r.items.join(', ')}`}})}
